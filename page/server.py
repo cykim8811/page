@@ -9,6 +9,7 @@ import threading
 import logging
 import time
 import math
+import os
 
 from .sprite import *
 
@@ -154,7 +155,6 @@ class Server:
         
         @self.app.route("/")
         def root():
-            print(self.config.resourcePath)
             return send_from_directory(self.config.resourcePath, "index.html")
         
         @self.socketio.on("request")
@@ -190,6 +190,10 @@ class Server:
         @self.app.route("/public/<path:path>")
         def public(path):
             return send_from_directory(self.config.resourcePath, path)
+        
+        @self.app.route("/<path:filepath>")
+        def serveFile(filepath):
+            return send_from_directory(os.getcwd(), filepath)
         
         # Variables
         self.clientList = []
