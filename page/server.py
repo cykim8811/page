@@ -171,6 +171,7 @@ class Server:
         
         @self.socketio.on("connect")
         def connect():
+            self.log(f"Client({request.sid}) Connected")
             if 'client' not in session:
                 newClient = Client(self, request.sid)
                 session['client'] = newClient
@@ -178,6 +179,7 @@ class Server:
         
         @self.socketio.on("disconnect")
         def disconnect():
+            self.log(f"Client({request.sid}) Disconnected")
             client = session['client']
             client.handleDisconnect()
             # Remove Client References
@@ -203,6 +205,9 @@ class Server:
     def disableLog(self):
         self.app.logger.disabled = True
         logging.getLogger('werkzeug').disabled = True
+    
+    def log(self, data):
+        print(f"[{time.ctime()}] {data}")
     
     def handleObjectCreate(self, obj):
         for client in self.clientList:
