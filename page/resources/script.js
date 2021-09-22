@@ -53,6 +53,16 @@ class Sprite{
         this.offsetX = offsetX;
         this.offsetY = offsetY;
         this.id = id;
+        
+        let self = this;
+        if (this.offsetX == undefined || this.offsetY == undefined){
+            console.log("undefined offset");
+            this.image.addEventListener('load', function(){
+                self.offsetX = Math.floor(self.image.width/2);
+                self.offsetY = Math.floor(self.image.height/2);
+                console.log(self);
+            })
+        }
     }
     draw(ctx, x, y, angle=0, scale=1, alpha=1){
         if (angle == 0){
