@@ -47,29 +47,36 @@ let view = {
 
 
 class Sprite{
-    constructor(path, offsetX, offsetY, id){
+    constructor(path, offsetX, offsetY, id, sx=0, sy=0, sWidth=undefined, sHeight=undefined){
         this.image = new Image();
         this.image.src = path;
         this.offsetX = offsetX;
         this.offsetY = offsetY;
         this.id = id;
+        this.sx = sx;
+        this.sy = sy;
+        this.sWidth = sWidth;
+        this.sHeight = sHeight;
         
         let self = this;
-        if (this.offsetX == undefined || this.offsetY == undefined){
-            console.log("undefined offset");
-            this.image.addEventListener('load', function(){
+        this.image.addEventListener('load', function(){
+            if (self.offsetX == undefined || self.offsetY == undefined){
                 self.offsetX = Math.floor(self.image.width/2);
                 self.offsetY = Math.floor(self.image.height/2);
-                console.log(self);
-            })
-        }
+            }
+            if (self.sWidth == undefined || self.sHeight == undefined){
+                self.sWidth = self.image.width;
+                self.sHeight = self.image.height;
+            }
+        });
     }
     draw(ctx, x, y, angle=0, scale=1, alpha=1){
         if (angle == 0){
             ctx.drawImage(this.image,
+                this.sx, this.sy, this.sWidth, this.sHeight,
                 Math.round(canvas.width / 2 + (x - view.x) * view.unit * view.size - this.offsetX * view.size),
                 Math.round(canvas.height / 2 + (y - view.y) * view.unit * view.size - this.offsetY * view.size),
-                this.image.width * view.size * scale, this.image.height * view.size * scale
+                this.sWidth * view.size * scale, this.sHeight * view.size * scale
             );
         }else{
             ctx.save()
@@ -77,9 +84,10 @@ class Sprite{
                           canvas.height / 2 + (y - view.y) * view.unit * view.size);
             ctx.rotate(angle * Math.PI / 180);
             ctx.drawImage(this.image,
+                this.sx, this.sy, this.sWidth, this.sHeight,
                 Math.round(-this.offsetX * view.size),
                 Math.round(-this.offsetY * view.size),
-                this.image.width * view.size * scale, this.image.height * view.size * scale
+                this.sWidth * view.size * scale, this.sHeight * view.size * scale
             );
             ctx.restore();
         }
@@ -91,7 +99,7 @@ async function getSprite(spriteId){
     let spr = spriteList.find((t)=>(t.id == spriteId));
     if (spr) return spr;
     spr = await request({type: "sprite", spriteId: spriteId});
-    let sprdata = new Sprite(spr.path, spr.offsetX, spr.offsetY, spr.id);
+    let sprdata = new Sprite(spr.path, spr.offsetX, spr.offsetY, spr.id, spr.sx, spr.sy, spr.sWidth, spr.sHeight);
     spriteList.push(sprdata);
     return sprdata;
 }
