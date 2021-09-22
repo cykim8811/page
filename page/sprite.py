@@ -2,7 +2,7 @@
 class Sprite:
     lastId = 1000000
     spriteList = [] # Temporary
-    def __init__(self, imagePath, offsetX, offsetY, sx=0, sy=0, sWidth=None, sHeight=None):
+    def __init__(self, imagePath, offsetX=None, offsetY=None, sx=0, sy=0, sWidth=None, sHeight=None):
         self.imagePath = imagePath
         self.offsetX = offsetX
         self.offsetY = offsetY
