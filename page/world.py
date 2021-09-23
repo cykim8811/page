@@ -26,8 +26,11 @@ class World:
         for obj in self.objectList:
             obj.onTick(deltaTime)
     
-    def getObjectsAt(self, x, y):
-        return [t for t in self.objectList if t.x == x and t.y == y]
+    def getObjectsAt(self, x, y, check_class=None):
+        x = round(x)
+        y = round(y)
+        return [t for t in self.objectList
+                if round(t.x) == x and round(t.y) == y and (check_class is None or isinstance(t, check_class))]
     
     def addObject(self, obj):
         self.objectList.append(obj)
