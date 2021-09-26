@@ -53,11 +53,7 @@ class Client:
         self.sid = sid
         self.view = View(server.config.unit)
         self.ghostList = []
-        # I know it's bad to do this here
-        # But I'm going to focus more on the functional clustering
-        # rather than object-oriented rules
-        # whatever. delete this after some time
-        
+       
         self.server.lastJoinedClient = self
         self.player = self.server.world.playerClass(self.server.world)
         self.server.world.onPlayerJoin(self.player)
