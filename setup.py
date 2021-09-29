@@ -9,4 +9,9 @@ setup(
     packages=find_packages(),
     url='https://github.com/cykim8811',
     include_package_data=True,
+    install_requires=[
+        'flask',
+        'flask_socketio',
+        'importlib_resources'
+    ],
 )
