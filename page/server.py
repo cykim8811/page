@@ -137,21 +137,23 @@ class Client:
         self.server.socketio.emit(event, json.dumps(data), room=self.sid)
         
 class Server:
-    def __init__(self, world):
+    def __init__(self, world, config):
         self.app = Flask(__name__)
         self.socketio = SocketIO(self.app, async_mode='threading')
         self.world = world
-        self.config = Config(
-            resourcePath = str(files('page').joinpath("resources")),
-            unit = 128,
-            defaultSprite = Sprite("public/default.png", 16, 16)
-        )
+        self.config = {
+            'resoucePath': str(files('page').joinpath("resources")),
+            'unit': 128,
+            'defaultSprite': Sprite("public/default.png", 16, 16)
+        }
+        for c in config:
+            self.config[c] = config[c]
         
         self.disableLog()
         
         @self.app.route("/")
         def root():
-            return send_from_directory(self.config.resourcePath, "index.html")
+            return send_from_directory(self.config[resourcePath], "index.html")
         
         @self.socketio.on("request")
         def requestHandle(msg):
@@ -187,7 +189,7 @@ class Server:
                     
         @self.app.route("/public/<path:path>")
         def public(path):
-            return send_from_directory(self.config.resourcePath, path)
+            return send_from_directory(self.config[resourcePath], path)
         
         @self.app.route("/<path:filepath>")
         def serveFile(filepath):
@@ -222,7 +224,7 @@ class Server:
             if ret:
                 return ret.pack()
             else:
-                return self.config.defaultSprite.pack()
+                return self.config[defaultSprite].pack()
     
     def detectObjectUpdate(self):
         for obj in self.world.objectList:

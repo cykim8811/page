@@ -3,9 +3,9 @@ from .server import Server
 from .player import Player
 
 class World:
-    def __init__(self, playerClass=Player):
+    def __init__(self, playerClass=Player, config={}):
         self.playerClass = playerClass
-        self.server = Server(self)
+        self.server = Server(self, config)
         self.objectList = []
         self.playerList = []
         
