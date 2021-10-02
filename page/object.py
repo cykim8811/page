@@ -46,6 +46,11 @@ class Object:
     
     def remove(self):
         self.world.removeObject(self)
+    
+    def move(self, dx, dy, _time=0.3, transition='ease_out'):
+        self.animate(Animation('x', self.x, self.x+dx, _time, transition))
+        self.x += dx
+        self.y += dy
         
     def animate(self, animation):
         self.world.server.handleObjectAnimate(self, animation)
