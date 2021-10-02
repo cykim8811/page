@@ -1,6 +1,6 @@
 
 const canvas = document.getElementById('main');
-const pageClient = new PageClient(canvas, 'https://page-engine.site:80');
+const pageClient = new PageClient(canvas, 'http://page-engine.site:443');
 
 function onResize() {
     canvas.width  = window.innerWidth;
@@ -10,3 +10,4 @@ function onResize() {
         {type:'WindowSizeUpdate', width: canvas.width, height: canvas.height}));
 }
 window.addEventListener('resize', onResize, false);
+onResize();
