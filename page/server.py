@@ -128,11 +128,6 @@ class Client:
         updatedParams['id'] = obj.id
         self.emit('UpdateGhost', updatedParams)
     
-    def animate(self, obj, animation):
-        data = animation.pack()
-        data['id'] = obj.id;
-        self.emit('AddAnimation', data)
-    
     def emit(self, event, data):
         self.server.socketio.emit(event, json.dumps(data), room=self.sid)
         
@@ -216,11 +211,6 @@ class Server:
         for client in self.clientList:
             if client.view.inRect(obj.x, obj.y):
                 client.removeGhost(obj)
-    
-    def handleObjectAnimate(self, obj, animation):
-        for client in self.clientList:
-            if client.view.inRect(obj.x, obj.y):
-                client.animate(obj, animation)
     
     def handleRequest(self, msg):
         if msg['type'] == "sprite":
