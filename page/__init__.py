@@ -1,6 +1,6 @@
 from page.object import Object
 from page.player import Player
-from page.server import Config, View, Client, Server, Message
+from page.server import View, Client, Server, Message
 from page.sprite import Sprite
 from page.world import World
 

@@ -46,7 +46,7 @@ class Client:
     def __init__(self, server, sid):
         self.server = server
         self.sid = sid
-        self.view = View(server.config.unit)
+        self.view = View(server.config['unit'])
         self.ghostList = []
        
         self.server.lastJoinedClient = self
