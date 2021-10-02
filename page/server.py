@@ -137,7 +137,7 @@ class Server:
         self.socketio = SocketIO(self.app, async_mode='threading')
         self.world = world
         self.config = {
-            'resoucePath': str(files('page').joinpath("resources")),
+            'resourcePath': str(files('page').joinpath("resources")),
             'unit': 128,
             'defaultSprite': Sprite("public/default.png", 16, 16)
         }
