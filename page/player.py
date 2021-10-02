@@ -4,6 +4,7 @@ class Player:
     def __init__(self, world):
         self.client = world.server.lastJoinedClient
         self.world = world
+        self.client.handleViewUpdate()
         
     def setViewSize(self, size):
         self.client.view.size = size
