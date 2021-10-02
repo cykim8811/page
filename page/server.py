@@ -13,11 +13,6 @@ import os
 
 from .sprite import *
 
-class Config:
-    def __init__(self, **kwargs):
-        for param in kwargs:
-            setattr(self, param, kwargs[param])
-
 class View:
     def __init__(self, unit):
         self.x = 0
@@ -153,7 +148,7 @@ class Server:
         
         @self.app.route("/")
         def root():
-            return send_from_directory(self.config[resourcePath], "index.html")
+            return send_from_directory(self.config['resourcePath'], "index.html")
         
         @self.socketio.on("request")
         def requestHandle(msg):
@@ -189,7 +184,7 @@ class Server:
                     
         @self.app.route("/public/<path:path>")
         def public(path):
-            return send_from_directory(self.config[resourcePath], path)
+            return send_from_directory(self.config['resourcePath'], path)
         
         @self.app.route("/<path:filepath>")
         def serveFile(filepath):
@@ -224,7 +219,7 @@ class Server:
             if ret:
                 return ret.pack()
             else:
-                return self.config[defaultSprite].pack()
+                return self.config['defaultSprite'].pack()
     
     def detectObjectUpdate(self):
         for obj in self.world.objectList:
