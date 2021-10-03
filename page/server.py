@@ -75,6 +75,8 @@ class Client:
                 self.player.onKeyDown(data['data']['key'])
             elif data['event'] == "keyup":
                 self.player.onKeyUp(data['data']['key'])
+        elif data['type'] == "CustomEvent":
+            self.player.onCustomEvent(data['event'], data['data'])
     
     def handleDisconnect(self):
         self.server.world.onPlayerLeave(self.player)

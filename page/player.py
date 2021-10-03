@@ -37,3 +37,6 @@ class Player:
     
     def onKeyUp(self, key):
         pass
+    
+    def onCustomEvent(self, event, data):
+        pass

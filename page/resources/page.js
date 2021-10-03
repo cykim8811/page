@@ -263,6 +263,13 @@ class PageClient{
             ghost.tick(0.01);
         }
     }
+    sendCustomEvent(event, data){
+        this.socket.emit('message', JSON.stringify({
+            type: "CustomEvent",
+            event: event,
+            data: data
+        }));
+    }
     initializeWorker(){
         setInterval(()=>{this.draw()}, 10);
         setInterval(()=>{this.tick()}, 10);
@@ -307,6 +314,6 @@ class PageClient{
                 data: {key: ev.key}
             }));
         });
-
+        
     }
 };
