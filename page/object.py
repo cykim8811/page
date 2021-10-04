@@ -24,6 +24,8 @@ class Object:
         self.sprite = None
         self.alpha = 1
         self.size = 1
+        self.xIndex = 0
+        self.yIndex = 0
         
         self.world = world
         
@@ -37,6 +39,8 @@ class Object:
             'sprite': None,
             'alpha': None,
             'size': None,
+            'xIndex': None,
+            'yIndex': None,
         }
         
         self.world.addObject(self)

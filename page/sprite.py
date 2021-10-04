@@ -2,14 +2,12 @@
 class Sprite:
     lastId = 1000000
     spriteList = [] # Temporary
-    def __init__(self, imagePath, offsetX=None, offsetY=None, sx=0, sy=0, sWidth=None, sHeight=None):
+    def __init__(self, imagePath, offsetX=None, offsetY=None, imageWidth=None, imageHeight=None):
         self.imagePath = imagePath
         self.offsetX = offsetX
         self.offsetY = offsetY
-        self.sx = sx
-        self.sy = sy
-        self.sWidth = sWidth
-        self.sHeight = sHeight
+        self.imageWidth = imageWidth
+        self.imageHeight = imageHeight
         Sprite.spriteList.append(self)
         Sprite.lastId += 1
         self.id = Sprite.lastId
@@ -21,10 +19,8 @@ class Sprite:
             'path': self.imagePath,
             'offsetX': self.offsetX,
             'offsetY': self.offsetY,
-            'sx': self.sx,
-            'sy': self.sy,
-            'sWidth': self.sWidth,
-            'sHeight': self.sHeight
+            'imageWidth': self.imageWidth,
+            'imageHeight': self.imageHeight
         }
     
     def getSpriteById(spriteId):

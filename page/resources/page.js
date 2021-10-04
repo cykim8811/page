@@ -8,37 +8,41 @@ const Transition = {
 };
 
 class Sprite{
-    constructor(path, offsetX, offsetY, id, sx=0, sy=0, sWidth=undefined, sHeight=undefined){
+    constructor(path, offsetX, offsetY, id, imageWidth=undefined, imageHeight=undefined){
         this.image = new Image();
         this.image.src = path;
         this.offsetX = offsetX;
         this.offsetY = offsetY;
         this.id = id;
-        this.sx = sx;
-        this.sy = sy;
-        this.sWidth = sWidth;
-        this.sHeight = sHeight;
+        this.imageWidth = imageWidth;
+        this.imageHeight = imageHeight;
         
         let self = this;
         this.image.addEventListener('load', function(){
-            if (self.offsetX == undefined || self.offsetY == undefined){
+            if (self.offsetX == undefined){
                 self.offsetX = Math.floor(self.image.width/2);
+            }
+            if (self.offsetY == undefined){
                 self.offsetY = Math.floor(self.image.height/2);
             }
-            if (self.sWidth == undefined || self.sHeight == undefined){
-                self.sWidth = self.image.width;
-                self.sHeight = self.image.height;
+            if (self.imageWidth == undefined){
+                self.imageWidth = self.image.width;
+            }
+            if (self.imageHeight == undefined){
+                self.imageHeight = self.image.height;
             }
         });
     }
-    draw(canvas, ctx, x, y, angle=0, scale=1, alpha=1){
+    draw(canvas, ctx, x, y, angle=0, scale=1, alpha=1, xIndex=0, yIndex=0){
+        const sx = xIndex * this.imageWidth;
+        const sy = yIndex * this.imageHeight;
         if (angle == 0){
             ctx.imageSmoothingEnabled = false
             ctx.drawImage(this.image,
-                this.sx, this.sy, this.sWidth, this.sHeight,
+                sx, sy, this.imageWidth, this.imageHeight,
                 Math.round(canvas.width / 2 + (x - view.x) * view.unit * view.size - this.offsetX * view.size),
                 Math.round(canvas.height / 2 + (y - view.y) * view.unit * view.size - this.offsetY * view.size),
-                this.sWidth * view.size * scale, this.sHeight * view.size * scale
+                this.imageWidth * view.size * scale, this.imageHeight * view.size * scale
             );
         }else{
             ctx.save();
@@ -46,10 +50,10 @@ class Sprite{
                           canvas.height / 2 + (y - view.y) * view.unit * view.size);
             ctx.rotate(angle * Math.PI / 180);
             ctx.drawImage(this.image,
-                this.sx, this.sy, this.sWidth, this.sHeight,
+                sx, sy, this.imageWidth, this.imageHeight,
                 Math.round(-this.offsetX * view.size),
                 Math.round(-this.offsetY * view.size),
-                this.sWidth * view.size * scale, this.sHeight * view.size * scale
+                this.imageWidth * view.size * scale, this.imageHeight * view.size * scale
             );
             ctx.restore();
         }
@@ -88,6 +92,8 @@ class Ghost{
         this.sprite = 0;
         this.alpha = 1;
         this.id = id;
+        this.xIndex = 0;
+        this.yIndex = 0;
         
         this.animationList = [];
     }
@@ -111,12 +117,17 @@ class Ghost{
             'angle': this.angle,
             'size': this.size,
             'alpha': this.alpha,
+            'xIndex': this.xIndex,
+            'yIndex': this.yIndex
         };
         for (let anim of this.animationList){
             param[anim.param] = anim.value();
+            if (anim.param == "xIndex" || anim.param == "yIndex"){
+                param[anim.param] = Math.floor(param[anim.param]);
+            }
         }
         if (this.sprite){
-            this.sprite.draw(canvas, ctx, param.x, param.y, param.angle, param.size, param.alpha);
+            this.sprite.draw(canvas, ctx, param.x, param.y, param.angle, param.size, param.alpha, param.xIndex, param.yIndex);
         }
     }
 };
@@ -171,7 +182,7 @@ class PageClient{
         let spr = this.spriteList.find((t)=>(t.id == spriteId));
         if (spr) return spr;
         spr = await this.request({type: "sprite", spriteId: spriteId});
-        let sprdata = new Sprite(spr.path, spr.offsetX, spr.offsetY, spr.id, spr.sx, spr.sy, spr.sWidth, spr.sHeight);
+        let sprdata = new Sprite(spr.path, spr.offsetX, spr.offsetY, spr.id, spr.imageWidth, spr.imageHeight);
         this.spriteList.push(sprdata);
         return sprdata;
     }

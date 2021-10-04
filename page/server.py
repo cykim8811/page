@@ -117,7 +117,9 @@ class Client:
             'angle': obj.angle,
             'size': obj.size,
             'sprite': obj.sprite.id if obj.sprite else 0,
-            'alpha': obj.alpha
+            'alpha': obj.alpha,
+            'xIndex': obj.xIndex,
+            'yIndex': obj.yIndex,
         })
     
     def removeGhost(self, obj):
@@ -149,7 +151,7 @@ class Server:
         self.config = {
             'resourcePath': str(files('page').joinpath("resources")),
             'unit': 128,
-            'defaultSprite': Sprite("public/default.png", 16, 16)
+            'defaultSprite': Sprite("public/default.png", 16, 16, 32, 32)
         }
         for c in config:
             self.config[c] = config[c]
