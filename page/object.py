@@ -48,7 +48,10 @@ class Object:
         self.world.removeObject(self)
     
     def move(self, dx, dy, _time=0.3, transition='ease_out'):
-        self.animate(Animation('x', self.x, self.x+dx, _time, transition))
+        if dx != 0:
+            self.animate(Animation('x', self.x, self.x+dx, _time, transition))
+        if dy != 0:
+            self.animate(Animation('y', self.y, self.y+dy, _time, transition))
         self.x += dx
         self.y += dy
         
