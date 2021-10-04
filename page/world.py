@@ -23,6 +23,8 @@ class World:
     def onTick(self, deltaTime):
         for player in self.playerList:
             player.onTick(deltaTime)
+            for key in player.keyPressed:
+                player.onKey(key, deltaTime)
         for obj in self.objectList:
             obj.onTick(deltaTime)
     

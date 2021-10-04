@@ -8,7 +8,6 @@ Payload.max_decode_packets = 500
 from importlib_resources import files, as_file
 
 import json
-import threading
 import logging
 import time
 import math
@@ -76,8 +75,12 @@ class Client:
                 )
             elif data['event'] == "keydown":
                 self.player.onKeyDown(data['data']['key'])
+                if data['data']['key'] not in self.player.keyPressed:
+                    self.player.keyPressed.append(data['data']['key'])
             elif data['event'] == "keyup":
                 self.player.onKeyUp(data['data']['key'])
+                if data['data']['key'] in self.player.keyPressed:
+                    self.player.keyPressed.remove(data['data']['key'])
         elif data['type'] == "CustomEvent":
             self.player.onCustomEvent(data['event'], data['data'])
     
@@ -146,7 +149,7 @@ class Client:
 class Server:
     def __init__(self, world, config):
         self.app = Flask(__name__)
-        self.socketio = SocketIO(self.app, async_mode='threading')
+        self.socketio = SocketIO(self.app, async_mode='gevent')
         self.world = world
         self.config = {
             'resourcePath': str(files('page').joinpath("resources")),
@@ -176,7 +179,6 @@ class Server:
         
         @self.socketio.on("connect")
         def connect():
-            self.log(f"Client({request.sid}) Connected")
             if 'client' not in session:
                 newClient = Client(self, request.sid)
                 session['client'] = newClient
@@ -184,7 +186,6 @@ class Server:
         
         @self.socketio.on("disconnect")
         def disconnect():
-            self.log(f"Client({request.sid}) Disconnected")
             client = session['client']
             client.handleDisconnect()
             # Remove Client References
@@ -210,9 +211,7 @@ class Server:
     def disableLog(self):
         self.app.logger.disabled = True
         logging.getLogger('werkzeug').disabled = True
-    
-    def log(self, data):
-        print(f"[{time.ctime()}] {data}")
+        logging.getLogger('werkzeug').setLevel(logging.ERROR)
     
     def handleObjectCreate(self, obj):
         for client in self.clientList:
@@ -268,9 +267,8 @@ class Server:
             obj.prevStatus[param] = getattr(obj, param)
     
     def run(self, host, port):
-        print(f"[Server Started on {host}:{port}]")
         self.socketio.start_background_task(target=self.worker)
-        self.socketio.run(self.app, host, port)
+        self.socketio.run(self.app, host, port, debug=True)
     
     def worker(self):
         while True:

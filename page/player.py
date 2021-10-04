@@ -5,6 +5,7 @@ class Player:
         self.client = world.server.lastJoinedClient
         self.world = world
         self.client.handleViewUpdate()
+        self.keyPressed = []
         
     def setViewSize(self, size):
         self.client.view.size = size
@@ -36,6 +37,9 @@ class Player:
         pass
     
     def onKeyUp(self, key):
+        pass
+    
+    def onKey(self, key, deltaTime):
         pass
     
     def onCustomEvent(self, event, data):
