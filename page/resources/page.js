@@ -33,6 +33,7 @@ class Sprite{
     }
     draw(canvas, ctx, x, y, angle=0, scale=1, alpha=1){
         if (angle == 0){
+            ctx.imageSmoothingEnabled = false
             ctx.drawImage(this.image,
                 this.sx, this.sy, this.sWidth, this.sHeight,
                 Math.round(canvas.width / 2 + (x - view.x) * view.unit * view.size - this.offsetX * view.size),
@@ -40,7 +41,7 @@ class Sprite{
                 this.sWidth * view.size * scale, this.sHeight * view.size * scale
             );
         }else{
-            ctx.save()
+            ctx.save();
             ctx.translate(canvas.width / 2 + (x - view.x) * view.unit * view.size,
                           canvas.height / 2 + (y - view.y) * view.unit * view.size);
             ctx.rotate(angle * Math.PI / 180);
@@ -126,8 +127,7 @@ class PageClient{
         // url: Full url path  ex) http://52.78.66.0:80
         this.canvas = canvas;
         this.context = canvas.getContext('2d');
-        this.context.imageSmoothingEnabled = false;
-        this.onResize = onResize?onResize:this.defaultOnResize;
+        // this.socket = new WebSocketClient(url);
         this.socket = io.connect(url);
         view = {unit: 32, size: 1, x: 0, y: 0};
         this.initialize();
@@ -227,6 +227,13 @@ class PageClient{
             }
         });
     }
+    sendCustomEvent(event, data){
+        this.socket.emit('message', JSON.stringify({
+            type: "CustomEvent",
+            event: event,
+            data: data
+        }));
+    }
     draw(){
         const canvas = this.canvas;
         const context = this.context;
@@ -250,9 +257,9 @@ class PageClient{
             }
             context.stroke();
         }
-        drawGrid(0, 0, "#AAA");
-        drawGrid(-2, -2, "#EEE");
-        drawGrid(-1, -1, "#DDD");
+        drawGrid(0, 0, "#CCC");
+        drawGrid(-2, -2, "#FCFCFC");
+        drawGrid(-1, -1, "#DEDEDE");
 
         for (let ghost of this.ghostList){
             ghost.draw(canvas, context);
@@ -262,13 +269,6 @@ class PageClient{
         for (let ghost of this.ghostList){
             ghost.tick(0.01);
         }
-    }
-    sendCustomEvent(event, data){
-        this.socket.emit('message', JSON.stringify({
-            type: "CustomEvent",
-            event: event,
-            data: data
-        }));
     }
     initializeWorker(){
         setInterval(()=>{this.draw()}, 10);
@@ -314,6 +314,6 @@ class PageClient{
                 data: {key: ev.key}
             }));
         });
-        
+
     }
 };
