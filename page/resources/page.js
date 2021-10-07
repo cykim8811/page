@@ -73,9 +73,10 @@ class Animation{
         this.currentTime += dT;
     }
     value(){
-        let r = this.transition(this.currentTime/this.duration);
+        let r = this.currentTime/this.duration;
         if (r < 0) {r=0;}
         if (r > 1) {r=1;}
+        r = this.transition(r);
         return this.from * (1-r) + this.to * r;
     }
     isEnd(){
@@ -190,12 +191,10 @@ class PageClient{
     initializeGhostHandler(){
         this.ghostList = [];
         this.socket.on('UpdateView', (msg)=>{
-            console.log('UpdateView');
             const data = JSON.parse(msg);
             view = data;
         });
         this.socket.on('CreateGhost', async (msg)=>{
-            console.log('CreateGhost');
             const data = JSON.parse(msg);
             let oldGhostIndex = this.ghostList.findIndex((t)=>(t.id == data.id));
             if (oldGhostIndex >=0){
@@ -205,7 +204,6 @@ class PageClient{
             this.ghostList.push(newGhost);
         });
         this.socket.on('RemoveGhost', async (msg)=>{
-            console.log('RemoveGhost');
             const data = JSON.parse(msg);
             let oldGhostIndex = this.ghostList.findIndex((t)=>(t.id == data.id));
             if (oldGhostIndex >=0){
@@ -214,7 +212,6 @@ class PageClient{
         });
         this.socket.on('UpdateGhost', async (msg)=>{
             const data = JSON.parse(msg);
-            console.log('UpdateGhost', data);
             let ghostIndex = this.ghostList.findIndex((t)=>(t.id == data.id));
             if (ghostIndex >=0){
                 const ghost = this.ghostList[ghostIndex];
