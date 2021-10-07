@@ -3,7 +3,7 @@ from flask import Flask, session, send_from_directory, request
 from flask_socketio import SocketIO, emit
 from engineio.payload import Payload
 
-Payload.max_decode_packets = 500
+#Payload.max_decode_packets = 500
 
 from importlib_resources import files, as_file
 
@@ -202,6 +202,10 @@ class Server:
         @self.app.route("/<path:filepath>")
         def serveFile(filepath):
             return send_from_directory(os.getcwd(), filepath)
+        
+        @self.app.route("/page.js")
+        def pageclient():
+            return send_from_directory(str(files('page').joinpath("resources")), "page.js")
         
         # Variables
         self.clientList = []
