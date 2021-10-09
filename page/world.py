@@ -1,6 +1,7 @@
 
 from .server import Server
 from .player import Player
+import threading
 
 class World:
     def __init__(self, playerClass=Player, config={}):
@@ -14,17 +15,29 @@ class World:
     
     def onPlayerJoin(self, player):
         self.playerList.append(player)
-        player.onJoin()
+        player.onJoin() # Synchronous. For possible initialization
     
     def onPlayerLeave(self, player):
-        player.onLeave()
+        threading.Thread(
+            target=self.playerClass.onLeave,
+            args=(player,)
+        ).start()
+        # player.onLeave()
         self.playerList.remove(player)
     
     def onTick(self, deltaTime):
         for player in self.playerList:
-            player.onTick(deltaTime)
+            threading.Thread(
+                target=self.playerClass.onTick,
+                args=(player, deltaTime)
+            ).start()
+            # player.onTick(deltaTime)
             for key in player.keyPressed:
-                player.onKey(key, deltaTime)
+                threading.Thread(
+                    target=self.playerClass.onKey,
+                    args=(player, key, deltaTime)
+                ).start()
+                # player.onKey(key, deltaTime)
         for obj in self.objectList:
             obj.onTick(deltaTime)
     
