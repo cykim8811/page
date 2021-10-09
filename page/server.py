@@ -16,6 +16,7 @@ import threading
 
 from .sprite import *
 from .player import *
+from .ui import *
 
 class View:
     def __init__(self, unit):
@@ -179,6 +180,24 @@ class Client:
         updatedParams['id'] = obj.id
         self.emit('UpdateGhost', updatedParams)
     
+    def createUI(self, ui):
+        self.ghostList.append(ui.id)
+        self.emit('CreateUI', {'id': ui.id})
+        self.emit('UpdateUI', ui.pack())
+    
+    def removeUI(self, ui):
+        if type(ui) is not int:
+            uiId = ui.id
+        else:
+            uiId = ui
+        if uiId in self.player.uiList:
+            self.player.uiList.remove(uiId)
+        self.emit('RemoveUI', {'id': uiId})
+    
+    def updateUI(self, ui, updatedParams):
+        updatedParams['id'] = ui.id
+        self.emit('UpdateUI', updatedParams)
+    
     def animate(self, obj, animation):
         data = animation.pack()
         data['id'] = obj.id;
@@ -311,6 +330,29 @@ class Server:
         for param in updatedParams:
             obj.prevStatus[param] = getattr(obj, param)
     
+    def detectUIUpdate(self):
+        for ui in UI.uiList:
+            updatedParams = {}
+            for param in ui.prevStatus:
+                if ui.prevStatus[param] != getattr(ui, param):
+                    updatedParams[param] = getattr(ui, param)
+            if len(updatedParams) != 0:
+                self.handleUIUpdate(ui, updatedParams)
+                
+    def handleUIUpdate(self, ui, updatedParams):
+        prev = ui.prevStatus
+        for client in self.clientList:
+            if ui in client.player.uiList:
+                client.updateUI(ui, updatedParams)
+
+        for param in updatedParams:
+            ui.prevStatus[param] = getattr(ui, param)
+            
+    def handleUIRemove(self, ui):
+        for client in self.clientList:
+            if ui in client.player.uiList:
+                client.removeUI(ui)
+                
     def run(self, host, port):
         self.socketio.start_background_task(target=self.worker)
         self.socketio.run(self.app, host, port, debug=True)
@@ -319,6 +361,7 @@ class Server:
         while True:
             self.world.onTick(0.01)
             self.detectObjectUpdate()
+            self.detectUIUpdate()
             time.sleep(0.01)
             
         

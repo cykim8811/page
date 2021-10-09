@@ -134,6 +134,24 @@ class Ghost{
     }
 };
 
+class UI{
+    constructor(id){
+        this.id = id;
+        this.text = "";
+        // for test
+        this.element = document.createElement("div");
+        this.element.style.position = "absolute";
+        this.element.style.top = "0px";
+        document.body.appendChild(this.element);
+    }
+    update(){
+        this.element.innerText = this.text;
+    }
+    remove(){
+        document.body.removeChild(this.element);
+    }
+};
+
 class PageClient{
     constructor(canvas, url){
         // canvas: HTML Element
@@ -149,6 +167,7 @@ class PageClient{
         this.initializeRequestHandler();
         this.initializeSpriteHandler();
         this.initializeGhostHandler();
+        this.initializeUIHandler();
         this.initializeWorker();
         this.initializeInputHandler();
     }
@@ -233,6 +252,40 @@ class PageClient{
                 const animation = new Animation(
                     data.param, data.from, data.to, data.duration, data.transition);
                 ghost.addAnimation(animation);
+            }
+        });
+    }
+    initializeUIHandler(){
+        this.uiList = [];
+        this.socket.on('CreateUI', async (msg)=>{
+            const data = JSON.parse(msg);
+            console.log("CreateUI");
+            let oldUIIndex = this.uiList.findIndex((t)=>(t.id == data.id));
+            if (oldUIIndex >=0){
+                this.uiList.splice(oldUIIndex, 1);
+            }
+            let newUI = new UI(data.id);
+            this.uiList.push(newUI);
+        });
+        this.socket.on('RemoveUI', async (msg)=>{
+            const data = JSON.parse(msg);
+            console.log("RemoveUI");
+            let oldUIIndex = this.uiList.findIndex((t)=>(t.id == data.id));
+            if (oldUIIndex >=0){
+                this.uiList[oldUIIndex].remove();
+                this.uiList.splice(oldUIIndex, 1);
+            }
+        });
+        this.socket.on('UpdateUI', async (msg)=>{
+            const data = JSON.parse(msg);
+            console.log("UpdateUI", data);
+            let uiIndex = this.uiList.findIndex((t)=>(t.id == data.id));
+            if (uiIndex >=0){
+                const ui = this.uiList[uiIndex];
+                for (let param in data){
+                    ui[param] = data[param];
+                }
+                ui.update();
             }
         });
     }
