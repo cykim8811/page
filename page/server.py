@@ -12,8 +12,10 @@ import logging
 import time
 import math
 import os
+import threading
 
 from .sprite import *
+from .player import *
 
 class View:
     def __init__(self, unit):
@@ -62,34 +64,82 @@ class Client:
             self.handleViewUpdate(send=False)
         elif data['type'] == "Event":
             if data['event'] == "mousedown":
-                self.player.onMouseDown(
-                    data['data']['button'],
-                    (data['data']['x'] - self.view.width/2)/(self.view.unit*self.view.size),
-                    (data['data']['y'] - self.view.height/2)/(self.view.unit*self.view.size)
-                )
+                threading.Thread(
+                    target = Player.onMouseDown,
+                    args=(
+                        self.player,
+                        data['data']['button'],
+                        (data['data']['x'] - self.view.width/2)/(self.view.unit*self.view.size),
+                        (data['data']['y'] - self.view.height/2)/(self.view.unit*self.view.size)
+                    )
+                ).start()
+                # self.player.onMouseDown(
+                #     data['data']['button'],
+                #     (data['data']['x'] - self.view.width/2)/(self.view.unit*self.view.size),
+                #     (data['data']['y'] - self.view.height/2)/(self.view.unit*self.view.size)
+                # )
             elif data['event'] == "mouseup":
-                self.player.onMouseUp(
-                    data['data']['button'],
-                    (data['data']['x'] - self.view.width/2)/(self.view.unit*self.view.size),
-                    (data['data']['y'] - self.view.height/2)/(self.view.unit*self.view.size)
-                )
+                threading.Thread(
+                    target = Player.onMouseUp,
+                    args=(
+                        self.player,
+                        data['data']['button'],
+                        (data['data']['x'] - self.view.width/2)/(self.view.unit*self.view.size),
+                        (data['data']['y'] - self.view.height/2)/(self.view.unit*self.view.size)
+                    )
+                ).start()
+                # self.player.onMouseUp(
+                #     data['data']['button'],
+                #     (data['data']['x'] - self.view.width/2)/(self.view.unit*self.view.size),
+                #     (data['data']['y'] - self.view.height/2)/(self.view.unit*self.view.size)
+                # )
             elif data['event'] == "mousemove":
-                self.player.onMouseMove(
-                    (data['data']['x'] - self.view.width/2)/(self.view.unit*self.view.size),
-                    (data['data']['y'] - self.view.height/2)/(self.view.unit*self.view.size)
-                )
+                threading.Thread(
+                    target = Player.onMouseMove,
+                    args=(
+                        self.player,
+                        (data['data']['x'] - self.view.width/2)/(self.view.unit*self.view.size),
+                        (data['data']['y'] - self.view.height/2)/(self.view.unit*self.view.size)
+                    )
+                ).start()
+                # self.player.onMouseMove(
+                #     (data['data']['x'] - self.view.width/2)/(self.view.unit*self.view.size),
+                #     (data['data']['y'] - self.view.height/2)/(self.view.unit*self.view.size)
+                # )
                 self.player.mouseX = (data['data']['x'] - self.view.width/2)/(self.view.unit*self.view.size)
                 self.player.mouseY = (data['data']['y'] - self.view.height/2)/(self.view.unit*self.view.size)
             elif data['event'] == "keydown":
-                self.player.onKeyDown(data['data']['key'])
+                threading.Thread(
+                    target = Player.onKeyDown,
+                    args=(
+                        self.player,
+                        data['data']['key']
+                    )
+                ).start()
+                # self.player.onKeyDown(data['data']['key'])
                 if data['data']['key'] not in self.player.keyPressed:
                     self.player.keyPressed.append(data['data']['key'])
             elif data['event'] == "keyup":
-                self.player.onKeyUp(data['data']['key'])
+                threading.Thread(
+                    target = Player.onKeyUp,
+                    args=(
+                        self.player,
+                        data['data']['key']
+                    )
+                ).start()
+                # self.player.onKeyUp(data['data']['key'])
                 if data['data']['key'] in self.player.keyPressed:
                     self.player.keyPressed.remove(data['data']['key'])
         elif data['type'] == "CustomEvent":
-            self.player.onCustomEvent(data['event'], data['data'])
+            threading.Thread(
+                target = Player.onCustomEvent,
+                args=(
+                    self.player,
+                    data['event'],
+                    data['data']
+                )
+            ).start()
+            # self.player.onCustomEvent(data['event'], data['data'])
     
     def handleDisconnect(self):
         self.server.world.onPlayerLeave(self.player)

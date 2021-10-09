@@ -32,6 +32,9 @@ class Player:
     
     def onMouseUp(self, btn, x, y):
         pass
+    
+    def onMouseMove(self, x, y):
+        pass
 
     def onKeyDown(self, key):
         pass
