@@ -73,6 +73,13 @@ class Client:
                     (data['data']['x'] - self.view.width/2)/(self.view.unit*self.view.size),
                     (data['data']['y'] - self.view.height/2)/(self.view.unit*self.view.size)
                 )
+            elif data['event'] == "mousemove":
+                self.player.onMouseMove(
+                    (data['data']['x'] - self.view.width/2)/(self.view.unit*self.view.size),
+                    (data['data']['y'] - self.view.height/2)/(self.view.unit*self.view.size)
+                )
+                self.player.mouseX = (data['data']['x'] - self.view.width/2)/(self.view.unit*self.view.size)
+                self.player.mouseY = (data['data']['y'] - self.view.height/2)/(self.view.unit*self.view.size)
             elif data['event'] == "keydown":
                 self.player.onKeyDown(data['data']['key'])
                 if data['data']['key'] not in self.player.keyPressed:

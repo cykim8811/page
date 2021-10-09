@@ -307,6 +307,17 @@ class PageClient{
             }));
         });
 
+        document.addEventListener('mousemove', (ev)=>{
+            this.socket.emit('message', JSON.stringify({
+                type: "Event",
+                event: "mousemove",
+                data: {
+                    x: ev.clientX,
+                    y: ev.clientY
+                }
+            }));
+        });
+
         document.addEventListener('keydown', (ev)=>{
             this.socket.emit('message', JSON.stringify({
                 type: "Event",
