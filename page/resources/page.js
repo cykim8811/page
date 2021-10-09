@@ -95,6 +95,7 @@ class Ghost{
         this.id = id;
         this.xIndex = 0;
         this.yIndex = 0;
+        this.depth = 0;
         
         this.animationList = [];
     }
@@ -268,7 +269,9 @@ class PageClient{
         drawGrid(0, 0, "#CCC");
         drawGrid(-2, -2, "#FCFCFC");
         drawGrid(-1, -1, "#DEDEDE");
-
+        
+        this.ghostList.sort((a, b)=>(b.depth-a.depth));
+        
         for (let ghost of this.ghostList){
             ghost.draw(canvas, context);
         }
