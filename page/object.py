@@ -26,6 +26,7 @@ class Object:
         self.size = 1
         self.xIndex = 0
         self.yIndex = 0
+        self.depth = 0
         
         self.world = world
         
@@ -41,6 +42,7 @@ class Object:
             'size': None,
             'xIndex': None,
             'yIndex': None,
+            'depth': None,
         }
         
         self.world.addObject(self)

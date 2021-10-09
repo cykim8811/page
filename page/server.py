@@ -130,6 +130,7 @@ class Client:
             'alpha': obj.alpha,
             'xIndex': obj.xIndex,
             'yIndex': obj.yIndex,
+            'depth': obj.depth,
         })
     
     def removeGhost(self, obj):
