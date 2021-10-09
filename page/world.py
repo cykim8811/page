@@ -22,7 +22,6 @@ class World:
             target=self.playerClass.onLeave,
             args=(player,)
         ).start()
-        # player.onLeave()
         self.playerList.remove(player)
     
     def onTick(self, deltaTime):
@@ -31,13 +30,11 @@ class World:
                 target=self.playerClass.onTick,
                 args=(player, deltaTime)
             ).start()
-            # player.onTick(deltaTime)
             for key in player.keyPressed:
                 threading.Thread(
                     target=self.playerClass.onKey,
                     args=(player, key, deltaTime)
                 ).start()
-                # player.onKey(key, deltaTime)
         for obj in self.objectList:
             obj.onTick(deltaTime)
     
