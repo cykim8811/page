@@ -175,7 +175,7 @@ class UI{
     }
 };
 class UIText extends UI{
-    constructor(id){
+    constructor(id, socket){
         super(id);
         this.text = "";
         this.element = document.createElement("div");
@@ -183,7 +183,15 @@ class UIText extends UI{
         this.element.style.display = "block";
         this.element.style.top = "0px";
         this.element.style.left = "0px";
+        this.element.style.userSelect = "none";
         document.body.appendChild(this.element);
+        this.element.onclick = (e)=>{
+            socket.emit('message', JSON.stringify({
+                type: "UIClick",
+                id: this.id,
+                btn: e.button
+            }));
+        };
     }
     update(){
         super.update();
@@ -191,7 +199,7 @@ class UIText extends UI{
     }
 };
 class UIImage extends UI{
-    constructor(id){
+    constructor(id, socket){
         super(id);
         this.image = "";
         this.element = document.createElement("img");
@@ -199,7 +207,15 @@ class UIImage extends UI{
         this.element.style.display = "block";
         this.element.style.top = "0px";
         this.element.style.left = "0px";
+        this.element.style.userSelect = "none";
         document.body.appendChild(this.element);
+        this.element.onclick = (e)=>{
+            socket.emit('message', JSON.stringify({
+                type: "UIClick",
+                id: this.id,
+                btn: e.button
+            }));
+        };
     }
     update(){
         super.update();
@@ -207,7 +223,7 @@ class UIImage extends UI{
     }
 };
 class UIInput extends UI{
-    constructor(id, socket=null){
+    constructor(id, socket){
         super(id);
         this.text = "";
         this.element = document.createElement("input");
@@ -215,12 +231,20 @@ class UIInput extends UI{
         this.element.style.display = "block";
         this.element.style.top = "0px";
         this.element.style.left = "0px";
+        this.element.style.userSelect = "none";
         document.body.appendChild(this.element);
         this.element.oninput = (e)=>{
             socket.emit('message', JSON.stringify({
                 type: "UIUpdate",
                 id: this.id,
                 text: this.element.value
+            }));
+        };
+        this.element.onclick = (e)=>{
+            socket.emit('message', JSON.stringify({
+                type: "UIClick",
+                id: this.id,
+                btn: e.button
             }));
         };
     }
@@ -344,9 +368,9 @@ class PageClient{
             }
             let newUI;
             if (data.UIType == "text"){
-                newUI = new UIText(data.id);
+                newUI = new UIText(data.id, this.socket);
             }else if (data.UIType == "image"){
-                newUI = new UIImage(data.id);
+                newUI = new UIImage(data.id, this.socket);
             }else if (data.UIType == "input"){
                 newUI = new UIInput(data.id, this.socket);
             }else{

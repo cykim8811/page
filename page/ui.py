@@ -13,6 +13,7 @@ class UI:
         self.horizontalAlign = "center"
         self.verticalOffset = 0
         self.horizontalOffset = 0
+        self.clickCount = 0
     
     def pack(self):
         return {
@@ -23,6 +24,9 @@ class UI:
             'verticalOffset': self.verticalOffset,
             'horizontalOffset': self.horizontalOffset,
         }
+    
+    def onClick(self, button):
+        self.clickCount += 1
     
     def remove(self):
         self.world.server.handleUIRemove(self)

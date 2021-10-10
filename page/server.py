@@ -68,6 +68,10 @@ class Client:
                 if ui.id != data['id']: continue
                 ui.text = data['text']
                 ui.prevStatus['text'] = data['text']
+        elif data['type'] == 'UIClick':
+            for ui in UI.uiList:
+                if ui.id != data['id']: continue
+                ui.onClick(data['btn'])
         elif data['type'] == "Event":
             if data['event'] == "mousedown":
                 threading.Thread(
