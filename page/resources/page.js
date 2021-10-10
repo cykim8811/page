@@ -134,6 +134,126 @@ class Ghost{
     }
 };
 
+class UI{
+    constructor(id){
+        this.id = id;
+        this.verticalAlign = "center";
+        this.horisontalAlign = "center";
+        this.verticalOffset = 0;
+        this.horisontalOffset = 0;
+    }
+    update(){
+        let translateX = "0";
+        let translateY = "0";
+        if (this.verticalAlign == "center"){
+            translateY = "-50%";
+            this.element.style.top = "50vh";
+            this.element.style.bottom = "";
+        }else if (this.verticalAlign == "top"){
+            this.element.style.top = this.verticalOffset + "px";
+            this.element.style.bottom = "";
+        }else if (this.verticalAlign == "bottom"){
+            this.element.style.bottom = this.verticalOffset + "px";
+            this.element.style.top = "";
+        }
+        if (this.horizontalAlign == "center"){
+            translateX = "-50%";
+            this.element.style.left = "50vw";
+            this.element.style.right = "";
+        }else if (this.horizontalAlign == "left"){
+            this.element.style.left = this.horizontalOffset + "px";
+            this.element.style.right = "";
+        }else if (this.horizontalAlign == "right"){
+            this.element.style.right = this.horizontalOffset + "px";
+            this.element.style.left = "";
+        }
+        this.element.style.transform = "translate(" + translateX + ", " + translateY + ")";
+    }
+    remove(){
+        document.body.removeChild(this.element);
+        this.element.remove();
+    }
+};
+class UIText extends UI{
+    constructor(id, socket){
+        super(id);
+        this.text = "";
+        this.element = document.createElement("div");
+        this.element.style.position = "absolute";
+        this.element.style.display = "block";
+        this.element.style.top = "0px";
+        this.element.style.left = "0px";
+        this.element.style.userSelect = "none";
+        document.body.appendChild(this.element);
+        this.element.onclick = (e)=>{
+            socket.emit('message', JSON.stringify({
+                type: "UIClick",
+                id: this.id,
+                btn: e.button
+            }));
+        };
+    }
+    update(){
+        super.update();
+        this.element.innerText = this.text;
+    }
+};
+class UIImage extends UI{
+    constructor(id, socket){
+        super(id);
+        this.image = "";
+        this.element = document.createElement("img");
+        this.element.style.position = "absolute";
+        this.element.style.display = "block";
+        this.element.style.top = "0px";
+        this.element.style.left = "0px";
+        this.element.style.userSelect = "none";
+        document.body.appendChild(this.element);
+        this.element.onclick = (e)=>{
+            socket.emit('message', JSON.stringify({
+                type: "UIClick",
+                id: this.id,
+                btn: e.button
+            }));
+        };
+    }
+    update(){
+        super.update();
+        this.element.src = this.image;
+    }
+};
+class UIInput extends UI{
+    constructor(id, socket){
+        super(id);
+        this.text = "";
+        this.element = document.createElement("input");
+        this.element.style.position = "absolute";
+        this.element.style.display = "block";
+        this.element.style.top = "0px";
+        this.element.style.left = "0px";
+        this.element.style.userSelect = "none";
+        document.body.appendChild(this.element);
+        this.element.oninput = (e)=>{
+            socket.emit('message', JSON.stringify({
+                type: "UIUpdate",
+                id: this.id,
+                text: this.element.value
+            }));
+        };
+        this.element.onclick = (e)=>{
+            socket.emit('message', JSON.stringify({
+                type: "UIClick",
+                id: this.id,
+                btn: e.button
+            }));
+        };
+    }
+    update(){
+        super.update();
+        this.element.value = this.text;
+    }
+};
+
 class PageClient{
     constructor(canvas, url){
         // canvas: HTML Element
@@ -149,6 +269,7 @@ class PageClient{
         this.initializeRequestHandler();
         this.initializeSpriteHandler();
         this.initializeGhostHandler();
+        this.initializeUIHandler();
         this.initializeWorker();
         this.initializeInputHandler();
     }
@@ -233,6 +354,49 @@ class PageClient{
                 const animation = new Animation(
                     data.param, data.from, data.to, data.duration, data.transition);
                 ghost.addAnimation(animation);
+            }
+        });
+    }
+    initializeUIHandler(){
+        this.uiList = [];
+        this.socket.on('CreateUI', async (msg)=>{
+            const data = JSON.parse(msg);
+            console.log("CreateUI", data);
+            let oldUIIndex = this.uiList.findIndex((t)=>(t.id == data.id));
+            if (oldUIIndex >=0){
+                this.uiList.splice(oldUIIndex, 1);
+            }
+            let newUI;
+            if (data.UIType == "text"){
+                newUI = new UIText(data.id, this.socket);
+            }else if (data.UIType == "image"){
+                newUI = new UIImage(data.id, this.socket);
+            }else if (data.UIType == "input"){
+                newUI = new UIInput(data.id, this.socket);
+            }else{
+                newUI = new UI(data.id);
+            }
+            this.uiList.push(newUI);
+        });
+        this.socket.on('RemoveUI', async (msg)=>{
+            const data = JSON.parse(msg);
+            console.log("RemoveUI");
+            let oldUIIndex = this.uiList.findIndex((t)=>(t.id == data.id));
+            if (oldUIIndex >=0){
+                this.uiList[oldUIIndex].remove();
+                this.uiList.splice(oldUIIndex, 1);
+            }
+        });
+        this.socket.on('UpdateUI', async (msg)=>{
+            const data = JSON.parse(msg);
+            console.log("UpdateUI", data);
+            let uiIndex = this.uiList.findIndex((t)=>(t.id == data.id));
+            if (uiIndex >=0){
+                const ui = this.uiList[uiIndex];
+                for (let param in data){
+                    ui[param] = data[param];
+                }
+                ui.update();
             }
         });
     }

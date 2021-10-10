@@ -6,6 +6,7 @@ class Player:
         self.world = world
         self.client.handleViewUpdate()
         self.keyPressed = []
+        self.uiList = []
         
     def setViewSize(self, size):
         self.client.view.size = size
@@ -15,6 +16,10 @@ class Player:
         self.client.view.x = x
         self.client.view.y = y
         self.client.handleViewUpdate()
+    
+    def addUI(self, ui):
+        self.uiList.append(ui)
+        self.client.createUI(ui)
     
     # Events for overriding
     
