@@ -137,18 +137,91 @@ class Ghost{
 class UI{
     constructor(id){
         this.id = id;
-        this.text = "";
-        // for test
-        this.element = document.createElement("div");
-        this.element.style.position = "absolute";
-        this.element.style.top = "0px";
-        document.body.appendChild(this.element);
+        this.verticalAlign = "center";
+        this.horisontalAlign = "center";
+        this.verticalOffset = 0;
+        this.horisontalOffset = 0;
     }
     update(){
-        this.element.innerText = this.text;
+        if (this.verticalAlign == "center"){
+            const rect = this.element.getBoundingClientRect();
+            this.element.style.top = Math.floor((window.innerHeight - rect.height)/2) + "px";
+            this.element.style.bottom = "";
+        }else if (this.verticalAlign == "top"){
+            this.element.style.top = this.verticalOffset + "px";
+            this.element.style.bottom = "";
+        }else if (this.verticalAlign == "bottom"){
+            this.element.style.bottom = this.verticalOffset + "px";
+            this.element.style.top = "";
+        }
+        if (this.horizontalAlign == "center"){
+            const rect = this.element.getBoundingClientRect();
+            this.element.style.left = Math.floor((window.innerWidth - rect.width)/2) + "px";
+            this.element.style.right = "";
+        }else if (this.horizontalAlign == "left"){
+            this.element.style.left = this.horizontalOffset + "px";
+            this.element.style.right = "";
+        }else if (this.horizontalAlign == "right"){
+            this.element.style.right = this.horizontalOffset + "px";
+            this.element.style.left = "";
+        }
     }
     remove(){
         document.body.removeChild(this.element);
+        this.element.remove();
+    }
+};
+class UIText extends UI{
+    constructor(id){
+        super(id);
+        this.text = "";
+        this.element = document.createElement("div");
+        this.element.style.position = "absolute";
+        this.element.style.display = "block";
+        this.element.style.top = "0px";
+        this.element.style.left = "0px";
+        document.body.appendChild(this.element);
+    }
+    update(){
+        super.update();
+        this.element.innerText = this.text;
+    }
+};
+class UIImage extends UI{
+    constructor(id){
+        super(id);
+        this.image = "";
+        this.element = document.createElement("img");
+        this.element.style.position = "absolute";
+        this.element.style.top = "0px";
+        this.element.style.left = "0px";
+        document.body.appendChild(this.element);
+    }
+    update(){
+        super.update();
+        this.element.src = this.image;
+    }
+};
+class UIInput extends UI{
+    constructor(id, socket=null){
+        super(id);
+        this.text = "";
+        this.element = document.createElement("input");
+        this.element.style.position = "absolute";
+        this.element.style.top = "0px";
+        this.element.style.left = "0px";
+        document.body.appendChild(this.element);
+        this.element.oninput = (e)=>{
+            socket.emit('message', JSON.stringify({
+                type: "UIUpdate",
+                id: this.id,
+                text: this.element.value
+            }));
+        };
+    }
+    update(){
+        super.update();
+        this.element.value = this.text;
     }
 };
 
@@ -259,12 +332,21 @@ class PageClient{
         this.uiList = [];
         this.socket.on('CreateUI', async (msg)=>{
             const data = JSON.parse(msg);
-            console.log("CreateUI");
+            console.log("CreateUI", data);
             let oldUIIndex = this.uiList.findIndex((t)=>(t.id == data.id));
             if (oldUIIndex >=0){
                 this.uiList.splice(oldUIIndex, 1);
             }
-            let newUI = new UI(data.id);
+            let newUI;
+            if (data.UIType == "text"){
+                newUI = new UIText(data.id);
+            }else if (data.UIType == "image"){
+                newUI = new UIImage(data.id);
+            }else if (data.UIType == "input"){
+                newUI = new UIInput(data.id, this.socket);
+            }else{
+                newUI = new UI(data.id);
+            }
             this.uiList.push(newUI);
         });
         this.socket.on('RemoveUI', async (msg)=>{

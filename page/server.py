@@ -63,6 +63,11 @@ class Client:
             self.view.width = data['width']
             self.view.height = data['height']
             self.handleViewUpdate(send=False)
+        elif data['type'] == 'UIUpdate':
+            for ui in UI.uiList:
+                if ui.id != data['id']: continue
+                ui.text = data['text']
+                ui.prevStatus['text'] = data['text']
         elif data['type'] == "Event":
             if data['event'] == "mousedown":
                 threading.Thread(
@@ -182,7 +187,7 @@ class Client:
     
     def createUI(self, ui):
         self.ghostList.append(ui.id)
-        self.emit('CreateUI', {'id': ui.id})
+        self.emit('CreateUI', {'id': ui.id, 'UIType': ui.UIType})
         self.emit('UpdateUI', ui.pack())
     
     def removeUI(self, ui):
