@@ -147,8 +147,20 @@ class UI{
     update(){
         let translateX = "0";
         let translateY = "0";
-        this.element.style.width = this.width?this.width+"px":"";
-        this.element.style.height = this.height?this.height+"px":"";
+        if (!this.width){
+            this.element.style.width = "";
+        }else if (typeof(this.width) == "number"){
+            this.element.style.width = this.width + "px";
+        }else{
+            this.element.style.width = this.width;
+        }
+        if (!this.height){
+            this.element.style.height = "";
+        }else if (typeof(this.height) == "number"){
+            this.element.style.height = this.height + "px";
+        }else{
+            this.element.style.height = this.height;
+        }
         if (this.verticalAlign == "center"){
             translateY = "-50%";
             this.element.style.top = "50vh";
