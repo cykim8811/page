@@ -143,9 +143,11 @@ class UI{
         this.horisontalOffset = 0;
     }
     update(){
+        let translateX = "0";
+        let translateY = "0";
         if (this.verticalAlign == "center"){
-            const rect = this.element.getBoundingClientRect();
-            this.element.style.top = Math.floor((window.innerHeight - rect.height)/2) + "px";
+            translateY = "-50%";
+            this.element.style.top = "50vh";
             this.element.style.bottom = "";
         }else if (this.verticalAlign == "top"){
             this.element.style.top = this.verticalOffset + "px";
@@ -155,8 +157,8 @@ class UI{
             this.element.style.top = "";
         }
         if (this.horizontalAlign == "center"){
-            const rect = this.element.getBoundingClientRect();
-            this.element.style.left = Math.floor((window.innerWidth - rect.width)/2) + "px";
+            translateX = "-50%";
+            this.element.style.left = "50vw";
             this.element.style.right = "";
         }else if (this.horizontalAlign == "left"){
             this.element.style.left = this.horizontalOffset + "px";
@@ -165,6 +167,7 @@ class UI{
             this.element.style.right = this.horizontalOffset + "px";
             this.element.style.left = "";
         }
+        this.element.style.transform = "translate(" + translateX + ", " + translateY + ")";
     }
     remove(){
         document.body.removeChild(this.element);
@@ -193,6 +196,7 @@ class UIImage extends UI{
         this.image = "";
         this.element = document.createElement("img");
         this.element.style.position = "absolute";
+        this.element.style.display = "block";
         this.element.style.top = "0px";
         this.element.style.left = "0px";
         document.body.appendChild(this.element);
@@ -208,6 +212,7 @@ class UIInput extends UI{
         this.text = "";
         this.element = document.createElement("input");
         this.element.style.position = "absolute";
+        this.element.style.display = "block";
         this.element.style.top = "0px";
         this.element.style.left = "0px";
         document.body.appendChild(this.element);
