@@ -141,10 +141,14 @@ class UI{
         this.horisontalAlign = "center";
         this.verticalOffset = 0;
         this.horisontalOffset = 0;
+        this.width = 0;
+        this.height = 0;
     }
     update(){
         let translateX = "0";
         let translateY = "0";
+        this.element.style.width = this.width?this.width+"px":"";
+        this.element.style.height = this.height?this.height+"px":"";
         if (this.verticalAlign == "center"){
             translateY = "-50%";
             this.element.style.top = "50vh";
@@ -178,6 +182,7 @@ class UIText extends UI{
     constructor(id, socket){
         super(id);
         this.text = "";
+        this.fontSize = 24;
         this.element = document.createElement("div");
         this.element.style.position = "absolute";
         this.element.style.display = "block";
@@ -195,6 +200,7 @@ class UIText extends UI{
     }
     update(){
         super.update();
+        this.element.style.fontSize = this.fontSize + "px";
         this.element.innerText = this.text;
     }
 };
@@ -208,6 +214,7 @@ class UIImage extends UI{
         this.element.style.top = "0px";
         this.element.style.left = "0px";
         this.element.style.userSelect = "none";
+        this.element.style.imageRendering = "pixelated";
         document.body.appendChild(this.element);
         this.element.onclick = (e)=>{
             socket.emit('message', JSON.stringify({
@@ -226,6 +233,7 @@ class UIInput extends UI{
     constructor(id, socket){
         super(id);
         this.text = "";
+        this.fontSize = 24;
         this.element = document.createElement("input");
         this.element.style.position = "absolute";
         this.element.style.display = "block";
@@ -250,6 +258,7 @@ class UIInput extends UI{
     }
     update(){
         super.update();
+        this.element.style.fontSize = this.fontSize + "px";
         this.element.value = this.text;
     }
 };

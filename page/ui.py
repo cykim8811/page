@@ -42,12 +42,18 @@ class UIText(UI):
         super().__init__(world)
         self.UIType = "text"
         self.text = "hi"
+        self.fontSize = 24
+        self.width = 300
+        self.height = 0
         self.prevStatus = {
             'text': None,
-            'verticalAlign': self.verticalAlign,
-            'horizontalAlign': self.horizontalAlign,
-            'verticalOffset': self.verticalOffset,
-            'horizontalOffset': self.horizontalOffset,
+            'verticalAlign': None,
+            'horizontalAlign': None,
+            'verticalOffset': None,
+            'horizontalOffset': None,
+            'fontSize': None,
+            'width': None,
+            'height': None,
         }
         
     def pack(self):
@@ -59,6 +65,9 @@ class UIText(UI):
             'horizontalAlign': self.horizontalAlign,
             'verticalOffset': self.verticalOffset,
             'horizontalOffset': self.horizontalOffset,
+            'fontSize': self.fontSize,
+            'width': None,
+            'height': None,
         }
 
 
@@ -67,12 +76,16 @@ class UIImage(UI):
         super().__init__(world)
         self.UIType = "image"
         self.image = ""
+        self.width = 300
+        self.height = 0
         self.prevStatus = {
             'image': None,
-            'verticalAlign': self.verticalAlign,
-            'horizontalAlign': self.horizontalAlign,
-            'verticalOffset': self.verticalOffset,
-            'horizontalOffset': self.horizontalOffset,
+            'verticalAlign': None,
+            'horizontalAlign': None,
+            'verticalOffset': None,
+            'horizontalOffset': None,
+            'width': None,
+            'height': None,
         }
         
     def pack(self):
@@ -84,6 +97,8 @@ class UIImage(UI):
             'horizontalAlign': self.horizontalAlign,
             'verticalOffset': self.verticalOffset,
             'horizontalOffset': self.horizontalOffset,
+            'width': None,
+            'height': None,
         }
 
 class UIInput(UI):
@@ -91,12 +106,18 @@ class UIInput(UI):
         super().__init__(world)
         self.UIType = "input"
         self.text = ""
+        self.fontSize = 24
+        self.width = 300
+        self.height = 0
         self.prevStatus = {
             'text': None,
-            'verticalAlign': self.verticalAlign,
-            'horizontalAlign': self.horizontalAlign,
-            'verticalOffset': self.verticalOffset,
-            'horizontalOffset': self.horizontalOffset,
+            'verticalAlign': None,
+            'horizontalAlign': None,
+            'verticalOffset': None,
+            'horizontalOffset': None,
+            'fontSize': None,
+            'width': None,
+            'height': None,
         }
         
     def pack(self):
@@ -108,5 +129,8 @@ class UIInput(UI):
             'horizontalAlign': self.horizontalAlign,
             'verticalOffset': self.verticalOffset,
             'horizontalOffset': self.horizontalOffset,
+            'fontSize': self.fontSize,
+            'width': None,
+            'height': None,
         }
     
