@@ -24,7 +24,7 @@ class Player:
         self.client.createUI(ui)
     
     def createUI(self, style={}):
-        ui = UIText(self.world)
+        ui = UI(self.world)
         self.addUI(ui)
         ui.style = style
         return ui
