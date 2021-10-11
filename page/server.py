@@ -343,7 +343,9 @@ class Server:
         for ui in UI.uiList:
             updatedParams = {}
             for param in ui.prevStatus:
-                if ui.prevStatus[param] != getattr(ui, param):
+                if param == "style" and str(ui.prevStatus['style']) != str(getattr(ui, 'style')):
+                    updatedParams[param] = getattr(ui, param)
+                elif ui.prevStatus[param] != getattr(ui, param):
                     updatedParams[param] = getattr(ui, param)
             if len(updatedParams) != 0:
                 self.handleUIUpdate(ui, updatedParams)
@@ -355,7 +357,10 @@ class Server:
                 client.updateUI(ui, updatedParams)
 
         for param in updatedParams:
-            ui.prevStatus[param] = getattr(ui, param)
+            if param == "style":
+                ui.prevStatus[param] = getattr(ui, param).copy()
+            else:
+                ui.prevStatus[param] = getattr(ui, param)
             
     def handleUIRemove(self, ui):
         for client in self.clientList:

@@ -1,4 +1,6 @@
 
+from .ui import *
+
 # Interface
 class Player:
     def __init__(self, world):
@@ -20,6 +22,33 @@ class Player:
     def addUI(self, ui):
         self.uiList.append(ui)
         self.client.createUI(ui)
+    
+    def createUI(self, style={}):
+        ui = UIText(self.world)
+        self.addUI(ui)
+        ui.style = style
+        return ui
+    
+    def createTextUI(self, text, style={}):
+        ui = UIText(self.world)
+        self.addUI(ui)
+        ui.text = text
+        ui.style = style
+        return ui
+    
+    def createImageUI(self, src, style={}):
+        ui = UIImage(self.world)
+        self.addUI(ui)
+        ui.image = src
+        ui.style = style
+        return ui
+    
+    def createInputUI(self, defalut="", style={}):
+        ui = UIInput(self.world)
+        self.addUI(ui)
+        ui.text = default
+        ui.style = style
+        return ui
     
     # Events for overriding
     

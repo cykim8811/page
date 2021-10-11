@@ -149,49 +149,59 @@ class UI{
         let translateX = "0";
         let translateY = "0";
         for (let attr in this.style){
-            if (!['backgroundColor', 'border', 'borderRadius', 'filter'].includes(attr)) {
+            if (!['backgroundColor', 'border', 'borderRadius', 'filter', 'width', 'height'].includes(attr)) {
                 console.log("CSS attribute " + attr + " not whitelisted as XSS-safe");
-                continue;
+                // continue;
             }
             this.element.style[attr] = this.style[attr];
         }
-        if (!this.width){
-            this.element.style.width = "";
-        }else if (typeof(this.width) == "number"){
-            this.element.style.width = this.width + "px";
-        }else{
-            this.element.style.width = this.width;
+        if (!this.style.hasOwnProperty('width')
+            && !this.style.hasOwnProperty('left')
+            && !this.style.hasOwnProperty('right')){
+            if (!this.width){
+                this.element.style.width = "";
+            }else if (typeof(this.width) == "number"){
+                this.element.style.width = this.width + "px";
+            }else{
+                this.element.style.width = this.width;
+            }
+            if (this.horizontalAlign == "center"){
+                translateX = "-50%";
+                this.element.style.left = "50vw";
+                this.element.style.right = "";
+            }else if (this.horizontalAlign == "left"){
+                this.element.style.left = this.horizontalOffset + "px";
+                this.element.style.right = "";
+            }else if (this.horizontalAlign == "right"){
+                this.element.style.right = this.horizontalOffset + "px";
+                this.element.style.left = "";
+            }
         }
-        if (!this.height){
-            this.element.style.height = "";
-        }else if (typeof(this.height) == "number"){
-            this.element.style.height = this.height + "px";
-        }else{
-            this.element.style.height = this.height;
+        if (!this.style.hasOwnProperty('height')
+            && !this.style.hasOwnProperty('top')
+            && !this.style.hasOwnProperty('bottom')){
+            if (!this.height){
+                this.element.style.height = "";
+            }else if (typeof(this.height) == "number"){
+                this.element.style.height = this.height + "px";
+            }else{
+                this.element.style.height = this.height;
+            }
+            if (this.verticalAlign == "center"){
+                translateY = "-50%";
+                this.element.style.top = "50vh";
+                this.element.style.bottom = "";
+            }else if (this.verticalAlign == "top"){
+                this.element.style.top = this.verticalOffset + "px";
+                this.element.style.bottom = "";
+            }else if (this.verticalAlign == "bottom"){
+                this.element.style.bottom = this.verticalOffset + "px";
+                this.element.style.top = "";
+            }
         }
-        if (this.verticalAlign == "center"){
-            translateY = "-50%";
-            this.element.style.top = "50vh";
-            this.element.style.bottom = "";
-        }else if (this.verticalAlign == "top"){
-            this.element.style.top = this.verticalOffset + "px";
-            this.element.style.bottom = "";
-        }else if (this.verticalAlign == "bottom"){
-            this.element.style.bottom = this.verticalOffset + "px";
-            this.element.style.top = "";
+        if (!this.style.hasOwnProperty('transform')){
+            this.element.style.transform = "translate(" + translateX + ", " + translateY + ")";
         }
-        if (this.horizontalAlign == "center"){
-            translateX = "-50%";
-            this.element.style.left = "50vw";
-            this.element.style.right = "";
-        }else if (this.horizontalAlign == "left"){
-            this.element.style.left = this.horizontalOffset + "px";
-            this.element.style.right = "";
-        }else if (this.horizontalAlign == "right"){
-            this.element.style.right = this.horizontalOffset + "px";
-            this.element.style.left = "";
-        }
-        this.element.style.transform = "translate(" + translateX + ", " + translateY + ")";
     }
     remove(){
         document.body.removeChild(this.element);
@@ -222,6 +232,28 @@ class UIText extends UI{
         super.update();
         this.element.style.fontSize = this.fontSize + "px";
         this.element.innerText = this.text;
+    }
+};
+class UIDefault extends UI{
+    constructor(id, socket){
+        super(id);
+        this.element = document.createElement("div");
+        this.element.style.position = "absolute";
+        this.element.style.display = "block";
+        this.element.style.top = "0px";
+        this.element.style.left = "0px";
+        this.element.style.userSelect = "none";
+        document.body.appendChild(this.element);
+        this.element.onclick = (e)=>{
+            socket.emit('message', JSON.stringify({
+                type: "UIClick",
+                id: this.id,
+                btn: e.button
+            }));
+        };
+    }
+    update(){
+        super.update();
     }
 };
 class UIImage extends UI{
@@ -403,7 +435,7 @@ class PageClient{
             }else if (data.UIType == "input"){
                 newUI = new UIInput(data.id, this.socket);
             }else{
-                newUI = new UI(data.id);
+                newUI = new UIDefault(data.id, this.socket);
             }
             this.uiList.push(newUI);
         });

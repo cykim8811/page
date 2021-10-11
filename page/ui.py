@@ -7,23 +7,17 @@ class UI:
         UI.uiList.append(self)
         UI.lastId += 1
         self.id = UI.lastId
-        self.prevStatus = {}
-        self.UIType = ""
-        self.verticalAlign = "center"
-        self.horizontalAlign = "center"
-        self.verticalOffset = 0
-        self.horizontalOffset = 0
         self.clickCount = 0
         self.style = {}  # Should be filtered!!!!! XSS vulnerable
+        self.UIType = ""
+        self.prevStatus = {
+            'style': None,
+        }
     
     def pack(self):
         return {
             'id': self.id,
             'UIType': self.UIType,
-            'verticalAlign': self.verticalAlign,
-            'horizontalAlign': self.horizontalAlign,
-            'verticalOffset': self.verticalOffset,
-            'horizontalOffset': self.horizontalOffset,
             'style': self.style,
         }
     
@@ -41,7 +35,16 @@ class UI:
 
 class UIText(UI):
     def __init__(self, world):
-        super().__init__(world)
+        self.world = world
+        UI.uiList.append(self)
+        UI.lastId += 1
+        self.id = UI.lastId
+        self.verticalAlign = "center"
+        self.horizontalAlign = "center"
+        self.verticalOffset = 0
+        self.horizontalOffset = 0
+        self.clickCount = 0
+        self.style = {}  # Should be filtered!!!!! XSS vulnerable
         self.UIType = "text"
         self.text = "hi"
         self.fontSize = 24
@@ -77,7 +80,16 @@ class UIText(UI):
 
 class UIImage(UI):
     def __init__(self, world):
-        super().__init__(world)
+        self.world = world
+        UI.uiList.append(self)
+        UI.lastId += 1
+        self.id = UI.lastId
+        self.verticalAlign = "center"
+        self.horizontalAlign = "center"
+        self.verticalOffset = 0
+        self.horizontalOffset = 0
+        self.clickCount = 0
+        self.style = {}  # Should be filtered!!!!! XSS vulnerable
         self.UIType = "image"
         self.image = ""
         self.width = 0
@@ -109,7 +121,16 @@ class UIImage(UI):
 
 class UIInput(UI):
     def __init__(self, world):
-        super().__init__(world)
+        self.world = world
+        UI.uiList.append(self)
+        UI.lastId += 1
+        self.id = UI.lastId
+        self.verticalAlign = "center"
+        self.horizontalAlign = "center"
+        self.verticalOffset = 0
+        self.horizontalOffset = 0
+        self.clickCount = 0
+        self.style = {}  # Should be filtered!!!!! XSS vulnerable
         self.UIType = "input"
         self.text = ""
         self.fontSize = 24
@@ -141,4 +162,3 @@ class UIInput(UI):
             'height': self.height,
             'style': self.style,
         }
-    
