@@ -14,6 +14,7 @@ class UI:
         self.verticalOffset = 0
         self.horizontalOffset = 0
         self.clickCount = 0
+        self.style = {}  # Should be filtered!!!!! XSS vulnerable
     
     def pack(self):
         return {
@@ -23,6 +24,7 @@ class UI:
             'horizontalAlign': self.horizontalAlign,
             'verticalOffset': self.verticalOffset,
             'horizontalOffset': self.horizontalOffset,
+            'style': self.style,
         }
     
     def onClick(self, button):
@@ -43,7 +45,7 @@ class UIText(UI):
         self.UIType = "text"
         self.text = "hi"
         self.fontSize = 24
-        self.width = 300
+        self.width = 0
         self.height = 0
         self.prevStatus = {
             'text': None,
@@ -54,6 +56,7 @@ class UIText(UI):
             'fontSize': None,
             'width': None,
             'height': None,
+            'style': None,
         }
         
     def pack(self):
@@ -66,8 +69,9 @@ class UIText(UI):
             'verticalOffset': self.verticalOffset,
             'horizontalOffset': self.horizontalOffset,
             'fontSize': self.fontSize,
-            'width': None,
-            'height': None,
+            'width': self.width,
+            'height': self.width,
+            'style': self.style,
         }
 
 
@@ -76,7 +80,7 @@ class UIImage(UI):
         super().__init__(world)
         self.UIType = "image"
         self.image = ""
-        self.width = 300
+        self.width = 0
         self.height = 0
         self.prevStatus = {
             'image': None,
@@ -86,6 +90,7 @@ class UIImage(UI):
             'horizontalOffset': None,
             'width': None,
             'height': None,
+            'style': None,
         }
         
     def pack(self):
@@ -97,8 +102,9 @@ class UIImage(UI):
             'horizontalAlign': self.horizontalAlign,
             'verticalOffset': self.verticalOffset,
             'horizontalOffset': self.horizontalOffset,
-            'width': None,
-            'height': None,
+            'width': self.width,
+            'height': self.height,
+            'style': self.style,
         }
 
 class UIInput(UI):
@@ -107,7 +113,7 @@ class UIInput(UI):
         self.UIType = "input"
         self.text = ""
         self.fontSize = 24
-        self.width = 300
+        self.width = 0
         self.height = 0
         self.prevStatus = {
             'text': None,
@@ -118,6 +124,7 @@ class UIInput(UI):
             'fontSize': None,
             'width': None,
             'height': None,
+            'style': None,
         }
         
     def pack(self):
@@ -130,7 +137,8 @@ class UIInput(UI):
             'verticalOffset': self.verticalOffset,
             'horizontalOffset': self.horizontalOffset,
             'fontSize': self.fontSize,
-            'width': None,
-            'height': None,
+            'width': self.width,
+            'height': self.height,
+            'style': self.style,
         }
     

@@ -143,10 +143,18 @@ class UI{
         this.horisontalOffset = 0;
         this.width = 0;
         this.height = 0;
+        this.style = {};
     }
     update(){
         let translateX = "0";
         let translateY = "0";
+        for (let attr in this.style){
+            if (!['backgroundColor', 'border', 'borderRadius', 'filter'].includes(attr)) {
+                console.log("CSS attribute " + attr + " not whitelisted as XSS-safe");
+                continue;
+            }
+            this.element.style[attr] = this.style[attr];
+        }
         if (!this.width){
             this.element.style.width = "";
         }else if (typeof(this.width) == "number"){
