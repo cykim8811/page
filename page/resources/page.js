@@ -329,8 +329,7 @@ class PageClient{
     initialize(){
         this.initializeRequestHandler();
         this.initializeSpriteHandler();
-        this.initializeGhostHandler();
-        this.initializeUIHandler();
+        this.initializeMessageHandler();
         this.initializeWorker();
         this.initializeInputHandler();
     }
@@ -371,93 +370,100 @@ class PageClient{
         return sprdata;
     }
     
-    initializeGhostHandler(){
+    initializeMessageHandler(){
         this.ghostList = [];
-        this.socket.on('UpdateView', (msg)=>{
-            const data = JSON.parse(msg);
-            view = data;
-        });
-        this.socket.on('CreateGhost', async (msg)=>{
-            const data = JSON.parse(msg);
-            let oldGhostIndex = this.ghostList.findIndex((t)=>(t.id == data.id));
-            if (oldGhostIndex >=0){
-                this.ghostList.splice(oldGhostIndex, 1);
-            }
-            let newGhost = new Ghost(data.id);
-            this.ghostList.push(newGhost);
-        });
-        this.socket.on('RemoveGhost', async (msg)=>{
-            const data = JSON.parse(msg);
-            let oldGhostIndex = this.ghostList.findIndex((t)=>(t.id == data.id));
-            if (oldGhostIndex >=0){
-                this.ghostList.splice(oldGhostIndex, 1);
-            }
-        });
-        this.socket.on('UpdateGhost', async (msg)=>{
-            const data = JSON.parse(msg);
-            let ghostIndex = this.ghostList.findIndex((t)=>(t.id == data.id));
-            if (ghostIndex >=0){
-                const ghost = this.ghostList[ghostIndex];
-                for (let param in data){
-                    if (param == "sprite"){
-                        ghost[param] = await this.getSprite(data[param]);
-                    }else{
-                        ghost[param] = data[param];
-                    }
-                }
-            }
-        });
-        this.socket.on('AddAnimation', async (msg)=>{
-            const data = JSON.parse(msg);
-            let ghostIndex = this.ghostList.findIndex((t)=>(t.id == data.id));
-            if (ghostIndex >=0){
-                const ghost = this.ghostList[ghostIndex];
-                const animation = new Animation(
-                    data.param, data.from, data.to, data.duration, data.transition);
-                ghost.addAnimation(animation);
-            }
-        });
-    }
-    initializeUIHandler(){
         this.uiList = [];
-        this.socket.on('CreateUI', async (msg)=>{
-            const data = JSON.parse(msg);
-            console.log("CreateUI", data);
-            let oldUIIndex = this.uiList.findIndex((t)=>(t.id == data.id));
-            if (oldUIIndex >=0){
-                this.uiList.splice(oldUIIndex, 1);
-            }
-            let newUI;
-            if (data.UIType == "text"){
-                newUI = new UIText(data.id, this.socket);
-            }else if (data.UIType == "image"){
-                newUI = new UIImage(data.id, this.socket);
-            }else if (data.UIType == "input"){
-                newUI = new UIInput(data.id, this.socket);
-            }else{
-                newUI = new UIDefault(data.id, this.socket);
-            }
-            this.uiList.push(newUI);
-        });
-        this.socket.on('RemoveUI', async (msg)=>{
-            const data = JSON.parse(msg);
-            console.log("RemoveUI");
-            let oldUIIndex = this.uiList.findIndex((t)=>(t.id == data.id));
-            if (oldUIIndex >=0){
-                this.uiList[oldUIIndex].remove();
-                this.uiList.splice(oldUIIndex, 1);
-            }
-        });
-        this.socket.on('UpdateUI', async (msg)=>{
-            const data = JSON.parse(msg);
-            console.log("UpdateUI", data);
-            let uiIndex = this.uiList.findIndex((t)=>(t.id == data.id));
-            if (uiIndex >=0){
-                const ui = this.uiList[uiIndex];
-                for (let param in data){
-                    ui[param] = data[param];
+        this.socket.on('package', (msg)=>{
+            const packages = JSON.parse(msg);
+            for (let pack of packages){
+                if (pack.event == 'UpdateView'){
+                    const data = pack.data;
+                    view = data;
+                }else if (pack.event == 'CreateGhost'){
+                    (async()=>{
+                        const data = pack.data;
+                        let oldGhostIndex = this.ghostList.findIndex((t)=>(t.id == data.id));
+                        if (oldGhostIndex >=0){
+                            this.ghostList.splice(oldGhostIndex, 1);
+                        }
+                        let newGhost = new Ghost(data.id);
+                        this.ghostList.push(newGhost);
+                    })();
+                }else if (pack.event == 'RemoveGhost'){
+                    (async()=>{
+                        const data = pack.data;
+                        let oldGhostIndex = this.ghostList.findIndex((t)=>(t.id == data.id));
+                        if (oldGhostIndex >=0){
+                            this.ghostList.splice(oldGhostIndex, 1);
+                        }
+                    })();
+                }else if (pack.event == 'UpdateGhost'){
+                    (async()=>{
+                        const data = pack.data;
+                        console.log("UpdateGhost", data);
+                        let ghostIndex = this.ghostList.findIndex((t)=>(t.id == data.id));
+                        if (ghostIndex >=0){
+                            const ghost = this.ghostList[ghostIndex];
+                            for (let param in data){
+                                if (param == "sprite"){
+                                    ghost[param] = await this.getSprite(data[param]);
+                                    console.log("Sprite:", ghost[param]);
+                                }else{
+                                    ghost[param] = data[param];
+                                }
+                            }
+                        }
+                    })();
+                }else if (pack.event == 'AddAnimation'){
+                    const data = pack.data;
+                    let ghostIndex = this.ghostList.findIndex((t)=>(t.id == data.id));
+                    if (ghostIndex >=0){
+                        const ghost = this.ghostList[ghostIndex];
+                        const animation = new Animation(
+                            data.param, data.from, data.to, data.duration, data.transition);
+                        ghost.addAnimation(animation);
+                    }
+                }else if (pack.event == 'CreateUI'){
+                    (async()=>{
+                        const data = pack.data;
+                        let oldUIIndex = this.uiList.findIndex((t)=>(t.id == data.id));
+                        if (oldUIIndex >=0){
+                            this.uiList.splice(oldUIIndex, 1);
+                        }
+                        let newUI;
+                        if (data.UIType == "text"){
+                            newUI = new UIText(data.id, this.socket);
+                        }else if (data.UIType == "image"){
+                            newUI = new UIImage(data.id, this.socket);
+                        }else if (data.UIType == "input"){
+                            newUI = new UIInput(data.id, this.socket);
+                        }else{
+                            newUI = new UIDefault(data.id, this.socket);
+                        }
+                        this.uiList.push(newUI);
+                    })();
+                }else if (pack.event == 'RemoveUI'){
+                    (async()=>{
+                        const data = pack.data;
+                        let oldUIIndex = this.uiList.findIndex((t)=>(t.id == data.id));
+                        if (oldUIIndex >=0){
+                            this.uiList[oldUIIndex].remove();
+                            this.uiList.splice(oldUIIndex, 1);
+                        }
+                    })();
+                }else if (pack.event == 'UpdateUI'){
+                    (async()=>{
+                        const data = pack.data;
+                        let uiIndex = this.uiList.findIndex((t)=>(t.id == data.id));
+                        if (uiIndex >=0){
+                            const ui = this.uiList[uiIndex];
+                            for (let param in data){
+                                ui[param] = data[param];
+                            }
+                            ui.update();
+                        }
+                    })();
                 }
-                ui.update();
             }
         });
     }

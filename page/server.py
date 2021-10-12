@@ -53,10 +53,12 @@ class Client:
         self.sid = sid
         self.view = View(server.config['unit'])
         self.ghostList = []
+        self.messagesToSend = []
        
         self.server.lastJoinedClient = self
         self.player = self.server.world.playerClass(self.server.world)
         self.server.world.onPlayerJoin(self.player)
+        
         
     def handleMessage(self, data):
         if data['type'] == 'WindowSizeUpdate':
@@ -212,8 +214,19 @@ class Client:
         data['id'] = obj.id;
         self.emit('AddAnimation', data)
     
+    def onTick(self, dT):
+        if len(self.messagesToSend) > 0:
+            self.server.socketio.emit('package', json.dumps(self.messagesToSend), room=self.sid)
+            self.messagesToSend = []
+    
     def emit(self, event, data):
-        self.server.socketio.emit(event, json.dumps(data), room=self.sid)
+        if event == "response":
+            self.server.socketio.emit(event, json.dumps(data))
+        else:
+            self.messagesToSend.append({
+                'event': event,
+                'data': data
+            })
         
 class Server:
     def __init__(self, world, config):
@@ -376,6 +389,8 @@ class Server:
             self.world.onTick(0.01)
             self.detectObjectUpdate()
             self.detectUIUpdate()
+            for client in self.clientList:
+                client.onTick(0.01)
             time.sleep(0.01)
             
         
