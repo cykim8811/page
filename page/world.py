@@ -15,7 +15,10 @@ class World:
     
     def onPlayerJoin(self, player):
         self.playerList.append(player)
-        player.onJoin() # Synchronous. For possible initialization
+        threading.Thread(
+            target=self.playerClass.onJoin,
+            args=(player,)
+        ).start()
     
     def onPlayerLeave(self, player):
         threading.Thread(

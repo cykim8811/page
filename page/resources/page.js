@@ -40,8 +40,8 @@ class Sprite{
             ctx.imageSmoothingEnabled = false
             ctx.drawImage(this.image,
                 sx, sy, this.imageWidth, this.imageHeight,
-                Math.round(canvas.width / 2 + (x - view.x) * view.unit * view.size - this.offsetX * view.size),
-                Math.round(canvas.height / 2 + (y - view.y) * view.unit * view.size - this.offsetY * view.size),
+                Math.round(canvas.width / 2 + (x - view.x) * view.unit * view.size - this.offsetX * view.size * scale),
+                Math.round(canvas.height / 2 + (y - view.y) * view.unit * view.size - this.offsetY * view.size * scale),
                 this.imageWidth * view.size * scale, this.imageHeight * view.size * scale
             );
         }else{
@@ -51,8 +51,8 @@ class Sprite{
             ctx.rotate(angle * Math.PI / 180);
             ctx.drawImage(this.image,
                 sx, sy, this.imageWidth, this.imageHeight,
-                Math.round(-this.offsetX * view.size),
-                Math.round(-this.offsetY * view.size),
+                Math.round(-this.offsetX * view.size * scale),
+                Math.round(-this.offsetY * view.size * scale),
                 this.imageWidth * view.size * scale, this.imageHeight * view.size * scale
             );
             ctx.restore();
