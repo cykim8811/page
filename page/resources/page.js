@@ -407,7 +407,6 @@ class PageClient{
                             for (let param in data){
                                 if (param == "sprite"){
                                     ghost[param] = await this.getSprite(data[param]);
-                                    console.log("Sprite:", ghost[param]);
                                 }else{
                                     ghost[param] = data[param];
                                 }
@@ -497,14 +496,23 @@ class PageClient{
             }
             context.stroke();
         }
-        drawGrid(0, 0, "#CCC");
-        drawGrid(-2, -2, "#FCFCFC");
-        drawGrid(-1, -1, "#DEDEDE");
         
         this.ghostList.sort((a, b)=>(b.depth-a.depth));
-        
+        let drawingDepth = 1;
+        if (this.ghostList.length > 0){
+            drawingDepth = this.ghostList[0].depth;
+        }
         for (let ghost of this.ghostList){
+            if (drawingDepth >= 0 && ghost.depth < 0) {
+                drawGrid(0, 0, "rgba(0, 0, 0, 0.1)");
+                drawGrid(-1, -1, "rgb(192, 192, 192)");
+            }
             ghost.draw(canvas, context);
+            drawingDepth = ghost.depth;
+        }
+        if (drawingDepth >= 0){
+            drawGrid(0, 0, "rgba(0, 0, 0, 0.1)");
+            drawGrid(-1, -1, "rgb(192, 192, 192)");
         }
     }
     tick(){
@@ -567,6 +575,9 @@ class PageClient{
                 data: {key: ev.key}
             }));
         });
-
+        document.addEventListener('contextmenu', (ev)=>{
+            ev.preventDefault();
+            ev.stopPropagation();
+        });
     }
 };
