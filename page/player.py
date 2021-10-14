@@ -14,11 +14,17 @@ class Player:
     def setViewSize(self, size):
         self.client.view.size = size
         self.client.handleViewUpdate()
+        
+    def getViewSize(self):
+        return self.client.view.size
     
     def setViewPos(self, x, y):
         self.client.view.x = x
         self.client.view.y = y
         self.client.handleViewUpdate()
+        
+    def getViewPos(self):
+        return (self.client.view.x, self.client.view.y)
     
     def addUI(self, ui):
         self.uiList.append(ui)
