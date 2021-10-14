@@ -39,6 +39,7 @@ class UIText(UI):
         UI.uiList.append(self)
         UI.lastId += 1
         self.id = UI.lastId
+        self.fontSize = 24
         self.verticalAlign = "center"
         self.horizontalAlign = "center"
         self.verticalOffset = 0
@@ -47,7 +48,6 @@ class UIText(UI):
         self.style = {}  # Should be filtered!!!!! XSS vulnerable
         self.UIType = "text"
         self.text = "hi"
-        self.fontSize = 24
         self.width = 0
         self.height = 0
         self.prevStatus = {
@@ -73,7 +73,7 @@ class UIText(UI):
             'horizontalOffset': self.horizontalOffset,
             'fontSize': self.fontSize,
             'width': self.width,
-            'height': self.width,
+            'height': self.height,
             'style': self.style,
         }
 

@@ -1,5 +1,6 @@
 
 from .ui import *
+import threading
 
 # Interface
 class Player:
@@ -31,9 +32,9 @@ class Player:
     
     def createTextUI(self, text, style={}):
         ui = UIText(self.world)
-        self.addUI(ui)
         ui.text = text
         ui.style = style
+        self.addUI(ui)
         return ui
     
     def createImageUI(self, src, style={}):
@@ -49,6 +50,9 @@ class Player:
         ui.text = default
         ui.style = style
         return ui
+    
+    def callEvent(self, ftn, args=[]):
+        threading.Thread(target=ftn, args=args).start()
     
     # Events for overriding
     
