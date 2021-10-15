@@ -9,28 +9,32 @@ const Transition = {
 
 class Sprite{
     constructor(path, offsetX, offsetY, id, imageWidth=undefined, imageHeight=undefined){
-        this.image = new Image();
-        this.image.src = path;
+        this.htmlimg = new Image();
+        this.htmlimg.src = path;
+        this.image = document.createElement('canvas');
         this.offsetX = offsetX;
         this.offsetY = offsetY;
         this.id = id;
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
         
-        let self = this;
-        this.image.addEventListener('load', function(){
-            if (self.offsetX == undefined){
-                self.offsetX = Math.floor(self.image.width/2);
+        this.htmlimg.addEventListener('load', ()=>{
+            if (this.offsetX == undefined){
+                this.offsetX = Math.floor(this.htmlimg.width/2);
             }
-            if (self.offsetY == undefined){
-                self.offsetY = Math.floor(self.image.height/2);
+            if (this.offsetY == undefined){
+                this.offsetY = Math.floor(this.htmlimg.height/2);
             }
-            if (self.imageWidth == undefined){
-                self.imageWidth = self.image.width;
+            if (this.imageWidth == undefined){
+                this.imageWidth = this.htmlimg.width;
             }
-            if (self.imageHeight == undefined){
-                self.imageHeight = self.image.height;
+            if (this.imageHeight == undefined){
+                this.imageHeight = this.htmlimg.height;
             }
+            let offscreenContext = this.image.getContext('2d');
+            this.image.width = this.htmlimg.width;
+            this.image.height = this.htmlimg.height;
+            offscreenContext.drawImage(this.htmlimg, 0, 0);
         });
     }
     draw(canvas, ctx, x, y, angle=0, scale=1, alpha=1, xIndex=0, yIndex=0){
@@ -42,7 +46,8 @@ class Sprite{
                 sx, sy, this.imageWidth, this.imageHeight,
                 Math.round(canvas.width / 2 + (x - view.x) * view.unit * view.size - this.offsetX * view.size * scale),
                 Math.round(canvas.height / 2 + (y - view.y) * view.unit * view.size - this.offsetY * view.size * scale),
-                this.imageWidth * view.size * scale, this.imageHeight * view.size * scale
+                Math.round(this.imageWidth * view.size * scale),
+                Math.round(this.imageHeight * view.size * scale)
             );
         }else{
             ctx.save();
@@ -100,6 +105,11 @@ class Ghost{
         this.animationList = [];
     }
     addAnimation(animation){
+        for (let i=this.animationList.length-1; i>=0; i--){
+            if (this.animationList[i].param == animation.param){
+                this.animationList.splice(i, 1);
+            }
+        }
         this.animationList.push(animation);
     }
     tick(dT){
@@ -375,6 +385,7 @@ class PageClient{
         this.uiList = [];
         this.socket.on('package', (msg)=>{
             const packages = JSON.parse(msg);
+            console.log("Received Package(size: " + packages.length + ")");
             for (let pack of packages){
                 if (pack.event == 'UpdateView'){
                     const data = pack.data;
@@ -400,7 +411,6 @@ class PageClient{
                 }else if (pack.event == 'UpdateGhost'){
                     (async()=>{
                         const data = pack.data;
-                        console.log("UpdateGhost", data);
                         let ghostIndex = this.ghostList.findIndex((t)=>(t.id == data.id));
                         if (ghostIndex >=0){
                             const ghost = this.ghostList[ghostIndex];
@@ -516,13 +526,21 @@ class PageClient{
         }
     }
     tick(){
+        let currentTime = Date.now();
+        let dT = (currentTime - this.prevTime) / 1000;
         for (let ghost of this.ghostList){
-            ghost.tick(0.01);
+            ghost.tick(dT);
         }
+        this.prevTime = currentTime;
     }
     initializeWorker(){
-        setInterval(()=>{this.draw()}, 10);
+        this.prevTime = Date.now();
         setInterval(()=>{this.tick()}, 10);
+        this.repeatDraw();
+    }
+    repeatDraw(){
+        this.draw();
+        requestAnimationFrame(()=>{this.repeatDraw()});
     }
     initializeInputHandler(){
         document.addEventListener('mousedown', (ev)=>{
