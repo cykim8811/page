@@ -35,11 +35,11 @@ class View:
             self.y + math.ceil(self.height / (2 * self.unit)),
         )
     
-    def inRect(self, x, y):
+    def inRect(self, x, y, padding=2):
         if x is None or y is None:
             return False
-        return abs(x - self.x) <= math.ceil(self.width / (2 * self.unit * self.size))\
-            and abs(y - self.y) <= math.ceil(self.height / (2 * self.unit * self.size))
+        return abs(x - self.x) <= math.ceil(self.width / (2 * self.unit * self.size)) + padding\
+            and abs(y - self.y) <= math.ceil(self.height / (2 * self.unit * self.size)) + padding
 
 class Message:
     def __init__(self, event, message, target):
