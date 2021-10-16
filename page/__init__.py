@@ -12,3 +12,8 @@ def World(*args, **kwargs):
     global world
     world = _World(*args, **kwargs)
     return world
+
+def serve(*args, **kwargs):
+    global world
+    world.serve(*args, **kwargs)
+    
