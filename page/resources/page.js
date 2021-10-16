@@ -514,15 +514,15 @@ class PageClient{
         }
         for (let ghost of this.ghostList){
             if (drawingDepth >= 0 && ghost.depth < 0) {
-                drawGrid(0, 0, "rgba(0, 0, 0, 0.1)");
-                drawGrid(-1, -1, "rgb(192, 192, 192)");
+                drawGrid(0, 0, "rgba(0, 0, 0, 0.05)");
+                drawGrid(-1, -1, "rgba(192, 192, 192, 0.2)");
             }
             ghost.draw(canvas, context);
             drawingDepth = ghost.depth;
         }
         if (drawingDepth >= 0){
-            drawGrid(0, 0, "rgba(0, 0, 0, 0.1)");
-            drawGrid(-1, -1, "rgb(192, 192, 192)");
+            drawGrid(0, 0, "rgba(0, 0, 0, 0.05)");
+            drawGrid(-1, -1, "rgba(192, 192, 192, 0.2)");
         }
     }
     tick(){
