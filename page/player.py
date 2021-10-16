@@ -1,12 +1,13 @@
 
 from .ui import *
 import threading
+import page
 
 # Interface
 class Player:
-    def __init__(self, world):
-        self.client = world.server.lastJoinedClient
-        self.world = world
+    def __init__(self):
+        self.world = page.world
+        self.client = self.world.server.lastJoinedClient
         self.client.handleViewUpdate()
         self.keyPressed = []
         self.uiList = []

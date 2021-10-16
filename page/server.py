@@ -56,7 +56,7 @@ class Client:
         self.messagesToSend = []
        
         self.server.lastJoinedClient = self
-        self.player = self.server.world.playerClass(self.server.world)
+        self.player = self.server.world.playerClass()
         self.server.world.onPlayerJoin(self.player)
         
         

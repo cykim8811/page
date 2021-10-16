@@ -1,3 +1,4 @@
+import page
 
 class Animation:
     def __init__(self, param, _from, _to, duration=1, transition='linear'):
@@ -17,7 +18,7 @@ class Animation:
         }
 
 class Object:
-    def __init__(self, world):
+    def __init__(self):
         self.x = 0
         self.y = 0
         self.angle = 0
@@ -28,10 +29,10 @@ class Object:
         self.yIndex = 0
         self.depth = 0
         
-        self.world = world
+        self.world = page.world
         
-        world.lastObjectId += 1
-        self.id = world.lastObjectId
+        self.world.lastObjectId += 1
+        self.id = self.world.lastObjectId
         
         self.prevStatus = {
             'x': None,

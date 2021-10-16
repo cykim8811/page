@@ -1,9 +1,10 @@
+import page
 
 class UI:
     uiList = []
     lastId = 1000000
-    def __init__(self, world):
-        self.world = world
+    def __init__(self):
+        self.world = page.world
         UI.uiList.append(self)
         UI.lastId += 1
         self.id = UI.lastId
@@ -34,8 +35,8 @@ class UI:
         return None
 
 class UIText(UI):
-    def __init__(self, world):
-        self.world = world
+    def __init__(self):
+        self.world = page.world
         UI.uiList.append(self)
         UI.lastId += 1
         self.id = UI.lastId
@@ -79,8 +80,8 @@ class UIText(UI):
 
 
 class UIImage(UI):
-    def __init__(self, world):
-        self.world = world
+    def __init__(self):
+        self.world = page.world
         UI.uiList.append(self)
         UI.lastId += 1
         self.id = UI.lastId
@@ -120,8 +121,8 @@ class UIImage(UI):
         }
 
 class UIInput(UI):
-    def __init__(self, world):
-        self.world = world
+    def __init__(self):
+        self.world = page.world
         UI.uiList.append(self)
         UI.lastId += 1
         self.id = UI.lastId
