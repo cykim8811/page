@@ -12,11 +12,14 @@ class Sprite{
         this.htmlimg = new Image();
         this.htmlimg.src = path;
         this.image = document.createElement('canvas');
+        this.ctx = this.image.getContext('2d');
         this.offsetX = offsetX;
         this.offsetY = offsetY;
         this.id = id;
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
+        this.load = false;
+        this.loadRes = [];
         
         this.htmlimg.addEventListener('load', ()=>{
             if (this.offsetX == undefined){
@@ -31,10 +34,19 @@ class Sprite{
             if (this.imageHeight == undefined){
                 this.imageHeight = this.htmlimg.height;
             }
-            let offscreenContext = this.image.getContext('2d');
             this.image.width = this.htmlimg.width;
             this.image.height = this.htmlimg.height;
-            offscreenContext.drawImage(this.htmlimg, 0, 0);
+            this.ctx.drawImage(this.htmlimg, 0, 0);
+            for (let res of this.loadRes){
+                res();
+            }
+            this.load = true;
+        });
+    }
+    async loaded(){
+        if (this.load) return;
+        return new Promise((res, rej)=>{
+            this.loadRes.push(res);
         });
     }
     draw(canvas, ctx, x, y, angle=0, scale=1, alpha=1, xIndex=0, yIndex=0){
@@ -160,7 +172,7 @@ class UI{
         let translateY = "0";
         for (let attr in this.style){
             if (!['backgroundColor', 'border', 'borderRadius', 'filter', 'width', 'height'].includes(attr)) {
-                console.log("CSS attribute " + attr + " not whitelisted as XSS-safe");
+                // console.log("CSS attribute " + attr + " not whitelisted as XSS-safe");
                 // continue;
             }
             this.element.style[attr] = this.style[attr];
@@ -370,12 +382,36 @@ class PageClient{
     
     initializeSpriteHandler(){
         this.spriteList = [];
+        this.spriteRequestList = [];
     }
     async getSprite(spriteId){
         let spr = this.spriteList.find((t)=>(t.id == spriteId));
         if (spr) return spr;
+        let sprReq = this.spriteRequestList.find((t)=>(t.id == spriteId));
+        if (sprReq != undefined) return await new Promise((res, rej)=>{sprReq.resList.push(res);});
+        this.spriteRequestList.push({id: spriteId, resList: []});
         spr = await this.request({type: "sprite", spriteId: spriteId});
         let sprdata = new Sprite(spr.path, spr.offsetX, spr.offsetY, spr.id, spr.imageWidth, spr.imageHeight);
+        for (let data of spr.attached){
+            let target = sprdata;
+            let source = await this.getSprite(data.source);
+            await target.loaded();
+            await source.loaded();
+            let size = data.size?data.size:1;
+            target.ctx.imageSmoothingEnabled = false;
+            target.ctx.drawImage(source.htmlimg,
+                data.xIndex * source.imageWidth, data.yIndex * source.imageHeight,
+                source.imageWidth, source.imageHeight,
+                data.x, data.y,
+                source.imageWidth * size, source.imageHeight * size
+            );
+        }
+        let sprResInd = this.spriteRequestList.findIndex((t)=>(t.id == spriteId));
+        let sprRes = this.spriteRequestList[sprResInd];
+        this.spriteRequestList.splice(sprResInd, 1);
+        for (let res of sprRes.resList){
+            res(sprdata);
+        }
         this.spriteList.push(sprdata);
         return sprdata;
     }
@@ -385,7 +421,6 @@ class PageClient{
         this.uiList = [];
         this.socket.on('package', (msg)=>{
             const packages = JSON.parse(msg);
-            console.log("Received Package(size: " + packages.length + ")");
             for (let pack of packages){
                 if (pack.event == 'UpdateView'){
                     const data = pack.data;
