@@ -35,7 +35,9 @@ class Sprite{
                 this.imageHeight = this.htmlimg.height;
             }
             this.image.width = this.htmlimg.width;
+            if (this.imageWidth > this.image.width){ this.image.width = this.imageWidth; }
             this.image.height = this.htmlimg.height;
+            if (this.imageHeight > this.image.height){ this.image.height = this.imageHeight; }
             this.ctx.drawImage(this.htmlimg, 0, 0);
             for (let res of this.loadRes){
                 res();
