@@ -11,8 +11,10 @@ class UI:
         self.clickCount = 0
         self.style = {}  # Should be filtered!!!!! XSS vulnerable
         self.UIType = ""
+        self.draggable = False
         self.prevStatus = {
             'style': None,
+            'draggable': self.draggable,
         }
     
     def pack(self):
@@ -20,6 +22,7 @@ class UI:
             'id': self.id,
             'UIType': self.UIType,
             'style': self.style,
+            'draggable': self.draggable,
         }
     
     def onClick(self, button):
@@ -51,6 +54,7 @@ class UIText(UI):
         self.text = "hi"
         self.width = 0
         self.height = 0
+        self.draggable = False
         self.prevStatus = {
             'text': None,
             'verticalAlign': None,
@@ -61,6 +65,7 @@ class UIText(UI):
             'width': None,
             'height': None,
             'style': None,
+            'draggable': self.draggable,
         }
         
     def pack(self):
@@ -76,6 +81,7 @@ class UIText(UI):
             'width': self.width,
             'height': self.height,
             'style': self.style,
+            'draggable': self.draggable,
         }
 
 
@@ -104,6 +110,7 @@ class UIImage(UI):
             'width': None,
             'height': None,
             'style': None,
+            'draggable': self.draggable,
         }
         
     def pack(self):
@@ -118,6 +125,7 @@ class UIImage(UI):
             'width': self.width,
             'height': self.height,
             'style': self.style,
+            'draggable': self.draggable,
         }
 
 class UIInput(UI):
@@ -147,6 +155,7 @@ class UIInput(UI):
             'width': None,
             'height': None,
             'style': None,
+            'draggable': self.draggable,
         }
         
     def pack(self):
@@ -162,4 +171,5 @@ class UIInput(UI):
             'width': self.width,
             'height': self.height,
             'style': self.style,
+            'draggable': self.draggable,
         }

@@ -167,6 +167,7 @@ class UI{
         this.horisontalOffset = 0;
         this.width = 0;
         this.height = 0;
+        this.draggable = false;
         this.style = {};
     }
     update(){
@@ -231,6 +232,29 @@ class UI{
         document.body.removeChild(this.element);
         this.element.remove();
     }
+    init_element(){
+        this.isDragging = false;
+        this.dragPos = {x: 0, y: 0};
+        this.element.addEventListener("mousedown", (ev)=>{
+            this.isDragging = true;
+            const rect = this.element.getBoundingClientRect();
+            const brect = document.body.getBoundingClientRect();
+            this.dragPos.x = ev.clientX;
+            this.dragPos.y = ev.clientY;
+        });
+        document.addEventListener("mouseup", (ev)=>{
+            this.isDragging = false;
+        });
+        document.addEventListener("mousemove", (ev)=>{
+            if (this.isDragging && this.draggable){
+                console.log(ev.clientX - this.dragPos.x);
+                this.element.style.left = this.element.offsetLeft + ev.clientX - this.dragPos.x + "px";
+                this.element.style.top = this.element.offsetTop + ev.clientY - this.dragPos.y + "px";
+                this.dragPos.x = ev.clientX;
+                this.dragPos.y = ev.clientY;
+            }
+        });
+    }
 };
 class UIText extends UI{
     constructor(id, socket){
@@ -251,6 +275,7 @@ class UIText extends UI{
                 btn: e.button
             }));
         };
+        this.init_element();
     }
     update(){
         super.update();
@@ -275,6 +300,7 @@ class UIDefault extends UI{
                 btn: e.button
             }));
         };
+        this.init_element();
     }
     update(){
         super.update();
@@ -299,6 +325,7 @@ class UIImage extends UI{
                 btn: e.button
             }));
         };
+        this.init_element();
     }
     update(){
         super.update();
@@ -331,6 +358,7 @@ class UIInput extends UI{
                 btn: e.button
             }));
         };
+        this.init_element();
     }
     update(){
         super.update();
