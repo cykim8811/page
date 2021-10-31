@@ -28,8 +28,9 @@ class Player:
         return (self.client.view.x, self.client.view.y)
     
     def addUI(self, ui):
-        self.uiList.append(ui)
-        self.client.createUI(ui)
+        if ui not in self.uiList:
+            self.uiList.append(ui)
+            self.client.createUI(ui)
     
     def createUI(self, style={}):
         ui = UI(self.world)
