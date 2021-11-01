@@ -99,6 +99,7 @@ class UIImage(UI):
         self.style = {}  # Should be filtered!!!!! XSS vulnerable
         self.UIType = "image"
         self.image = ""
+        self.draggable = False
         self.width = 0
         self.height = 0
         self.prevStatus = {
@@ -143,6 +144,7 @@ class UIInput(UI):
         self.UIType = "input"
         self.text = ""
         self.fontSize = 24
+        self.draggable = False
         self.width = 0
         self.height = 0
         self.prevStatus = {

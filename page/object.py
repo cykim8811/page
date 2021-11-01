@@ -1,4 +1,5 @@
 import page
+import threading
 
 class Animation:
     def __init__(self, param, _from, _to, duration=1, transition='linear'):
@@ -48,6 +49,9 @@ class Object:
         
         self.world.addObject(self)
     
+    def callEvent(self, ftn, args=[]):
+        threading.Thread(target=ftn, args=args).start()
+
     def onTick(self, deltaTime):
         pass
     

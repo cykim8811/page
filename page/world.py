@@ -39,7 +39,10 @@ class World:
                     args=(player, key, deltaTime)
                 ).start()
         for obj in self.objectList:
-            obj.onTick(deltaTime)
+            threading.Thread(
+                target=obj.__class__.onTick,
+                args=(obj, deltaTime)
+            ).start()
     
     def getObjectsAt(self, x, y, check_class=None):
         x = round(x)
